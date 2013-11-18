@@ -20,3 +20,21 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+/*
+grails {
+	plugin
+		springwebsocket {
+			messageBroker {
+				applicationDestinationPrefixes = ["/foo", "/bar"]
+				brokerPrefixes = ["/foo", "/bar"]
+			}
+			stompEndpoints = [
+				["/foo", "/bar"],
+				["/bla", "/hah"]
+			]
+			dispatcherServlet.additionalMappings = ["/foo/*", "/bar/*", "/bla/*", "/hah/*"]
+		}
+	}
+}
+*/

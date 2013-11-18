@@ -1,6 +1,7 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+grails.project.work.dir = "target/work"
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
@@ -37,6 +38,10 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.24'
+		
+		compile "org.springframework:spring-messaging:4.0.0.RC1"
+		compile "org.springframework:spring-websocket:4.0.0.RC1"
+		compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
     }
 
     plugins {
