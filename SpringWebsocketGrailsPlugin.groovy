@@ -36,7 +36,7 @@ class SpringWebsocketGrailsPlugin {
 		
 		httpRequestHandlerAdapter HttpRequestHandlerAdapter
 		
-		if (!config.useCustomConfig) {
+		if (!config?.useCustomConfig) {
 			webSocketConfig WebSocketConfig
 			
 			grailsSimpAnnotationMethodMessageHandler(
