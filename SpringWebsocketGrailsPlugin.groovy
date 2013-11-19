@@ -1,3 +1,7 @@
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
+
+import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler;
 import grails.plugin.springwebsocket.WebSocketConfig;
 
 class SpringWebsocketGrailsPlugin {
@@ -44,7 +48,21 @@ class SpringWebsocketGrailsPlugin {
 	}
 
 	def doWithSpring = {
-		webSocketConfig WebSocketConfig
+		def config = application.config.grails?.plugin?.springwebsocket
+		
+		httpRequestHandlerAdapter HttpRequestHandlerAdapter
+		
+		if (!config.useCustomConfig) {
+			webSocketConfig WebSocketConfig
+			
+			grailsSimpAnnotationMethodMessageHandler(
+				GrailsSimpAnnotationMethodMessageHandler,
+				ref("brokerMessagingTemplate"),
+				ref("webSocketResponseChannel")
+			) {
+				destinationPrefixes = config?.messageBroker?.applicationDestinationPrefixes ?: WebSocketConfig.DEFAULT_APPLICATION_DESTINATION_PREFIXES
+			}
+		}
 	}
 
 	def doWithDynamicMethods = { ctx ->

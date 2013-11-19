@@ -25,6 +25,8 @@ log4j = {
 grails {
 	plugin
 		springwebsocket {
+			useCustomConfig = false
+			dispatcherServlet.additionalMappings = ["/foo/*", "/bar/*", "/bla/*", "/hah/*"]
 			messageBroker {
 				applicationDestinationPrefixes = ["/foo", "/bar"]
 				brokerPrefixes = ["/foo", "/bar"]
@@ -33,7 +35,6 @@ grails {
 				["/foo", "/bar"],
 				["/bla", "/hah"]
 			]
-			dispatcherServlet.additionalMappings = ["/foo/*", "/bar/*", "/bla/*", "/hah/*"]
 		}
 	}
 }
