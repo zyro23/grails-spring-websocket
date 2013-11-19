@@ -1,8 +1,7 @@
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
+import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler
+import grails.plugin.springwebsocket.WebSocketConfig
 
-import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler;
-import grails.plugin.springwebsocket.WebSocketConfig;
+import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
 class SpringWebsocketGrailsPlugin {
 	
