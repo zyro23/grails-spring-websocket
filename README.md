@@ -19,6 +19,8 @@ That is mentioned multiple times in this readme because there is everything expl
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
 	compile ":spring-websocket:0.1.BUILD-SNAPSHOT"
+	
+The plugin is published already to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
 
 ## Configuration
 
@@ -42,7 +44,7 @@ The following configuration options are available (e.g. by adding some or all of
 	<tr>
 		<td>Description</td>
 		<td>
-			By Default, the <code>GrailsDispatcherServlet</code> is mapped to <code>*.dispatch</code>.<br />
+			By default, the <code>GrailsDispatcherServlet</code> is mapped to <code>*.dispatch</code>.<br />
 			Because the sock.js support in Spring is not using a separate servlet but additional handlers for the <code>DispatcherServlet</code>, the relevant endpoints have to be covered by the servlet-mapping.<br />
 			If the default value is too generic for your application, use this setting to narrow the servlet mappings down.<br />
 			Usually, you will want to have at least your STOMP endpoints covered.
