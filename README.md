@@ -1,11 +1,12 @@
 # Spring Websocket Grails Plugin
 
 - - -
-The current state is still a work in progress with much room for improvements.  
-This is reflected by the plugin version which is still a BUILD-SNAPSHOT (at the time of writing).
+*The current state is still a work in progress with much room for improvements.*  
+*This is reflected by the plugin version which is still a BUILD-SNAPSHOT (at the time of writing)*.
 
-Currently, only the Grails Tomcat-8 Plugin (RC5) is known to work with this plugin.  
-But a websocket-supporting version of Jetty shoud basically do the job as well as a Tomcat-7 (7.0.47+)
+*The plugin is targeting Grails 2.4+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
+*Currently, only the Grails Tomcat-8 Plugin (RC5) is known to work with this plugin.*  
+*But a websocket-supporting version of Jetty should basically do the job as well as a Tomcat-7 (7.0.47+).*
 - - -
 
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
@@ -17,7 +18,7 @@ That is mentioned multiple times in this readme because there is everything expl
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.0.BUILD-SNAPSHOT"
+	compile ":spring-websocket:0.1.BUILD-SNAPSHOT"
 
 ## Configuration
 
@@ -28,7 +29,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><code>grails.plugin.springwebsocket.dispatcherServlet.additionalMappings</code></td>
+		<td><strong><code>grails.plugin.springwebsocket.dispatcherServlet.additionalMappings</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -52,7 +53,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><code>grails.plugin.springwebsocket.messageBroker.applicationDestinationPrefixes</code></td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.applicationDestinationPrefixes</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -74,7 +75,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><code>grails.plugin.springwebsocket.messageBroker.brokerPrefixes</code></td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.brokerPrefixes</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -97,7 +98,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><code>grails.plugin.springwebsocket.stompEndpoints</code></td>
+		<td><strong><code>grails.plugin.springwebsocket.stompEndpoints</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -120,7 +121,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><code>grails.plugin.springwebsocket.useCustomConfig</code></td>
+		<td><strong><code>grails.plugin.springwebsocket.useCustomConfig</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -140,7 +141,11 @@ The following configuration options are available (e.g. by adding some or all of
 	</tr>
 </table>
 
-If you need more sophisticated configuration options, e.g. with a "real" STOMP broker like ActiveMQ or RabbitMQ, currently the way to go would be using the <code>useCustomConfig</code> setting and heading over to the Spring docs/apis/samples covering the configuration of websockets/messaging.
+If you need more sophisticated configuration options, e.g. with a "real" stomp broker like ActiveMQ or RabbitMQ, currently the way to go would be using the <code>useCustomConfig</code> setting and heading over to the Spring docs/apis/samples covering the configuration of websockets/messaging.  
+You can of course use the plugin's `WebSocketConfig` for orientation. It uses `@EnableWebSocketMessageBroker` and implements `WebSocketMessageBrokerConfigurer`.
+But for bigger config adjustments, it is likely you end up extending Spring's `WebSocketMessageBrokerConfigurationSupport`. 
+
+Future versions of this plugin may cover more configuration options.
 
 ## Usage
 
@@ -208,8 +213,8 @@ Unless you want your handler method to be exposed as controller action, it is im
 </html>
 ```
 
-The index view of the controller above. It connects to the message broker and subscribes to <code>/topic/hello</code>.  
-For this example, i added a button allowing to trigger a send/receive roundtrip. the use of jquery is **not required**.
+This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
+For this example, i added a button allowing to trigger a send/receive roundtrip. The use of jquery is **not required**.
 
 Dont be confused about the credentials shown in this snippet - they do not matter.  
 Stomp supports other transports like tcp, too. There, such an authentication can be useful.  
