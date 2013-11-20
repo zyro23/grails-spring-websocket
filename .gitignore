@@ -5,5 +5,4 @@
 /.project
 /.link_to_grails_plugins
 /plugin.xml
-/web-app/WEB-INF
 /grails-spring-websocket-*
