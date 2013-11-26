@@ -18,10 +18,10 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 	@Resource
 	GrailsApplication grailsApplication
 	@Resource
-	SubscribableChannel webSocketRequestChannel
+	SubscribableChannel clientInboundChannel
 	
-	GrailsSimpAnnotationMethodMessageHandler(SimpMessageSendingOperations brokerTemplate, MessageChannel webSocketResponseChannel) {
-		super(brokerTemplate, webSocketResponseChannel)
+	GrailsSimpAnnotationMethodMessageHandler(SimpMessageSendingOperations brokerTemplate, MessageChannel clientOutboundChannel) {
+		super(brokerTemplate, clientOutboundChannel)
 	}
 	
 	@Override
@@ -30,10 +30,9 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 		super.setMessageConverter messageConverter
 	}
 	
-	
 	@Override
 	void afterPropertiesSet() {
-		webSocketRequestChannel.subscribe this
+		clientInboundChannel.subscribe this
 		super.afterPropertiesSet()
 	}
 	
