@@ -34,13 +34,15 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+		
+		mavenRepo "http://repo.spring.io/snapshot"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.24'
 		
-		compile "org.springframework:spring-messaging:4.0.0.RC1"
-		compile "org.springframework:spring-websocket:4.0.0.RC1"
+		compile "org.springframework:spring-messaging:4.0.0.BUILD-SNAPSHOT"
+		compile "org.springframework:spring-websocket:4.0.0.BUILD-SNAPSHOT"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
     }
 

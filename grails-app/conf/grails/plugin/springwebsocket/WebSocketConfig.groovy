@@ -4,10 +4,10 @@ import javax.annotation.Resource
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.annotation.Configuration
-import org.springframework.messaging.simp.config.EnableWebSocketMessageBroker
-import org.springframework.messaging.simp.config.MessageBrokerConfigurer
-import org.springframework.messaging.simp.config.StompEndpointRegistry
-import org.springframework.messaging.simp.config.WebSocketMessageBrokerConfigurer
+import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.web.socket.messaging.config.EnableWebSocketMessageBroker
+import org.springframework.web.socket.messaging.config.StompEndpointRegistry
+import org.springframework.web.socket.messaging.config.WebSocketMessageBrokerConfigurer
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -21,14 +21,14 @@ class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	GrailsApplication grailsApplication
 	
 	@Override
-	void configureMessageBroker(MessageBrokerConfigurer mbc) {
+	void configureMessageBroker(MessageBrokerRegistry mbr) {
 		def config = grailsApplication.config.grails?.plugin?.springwebsocket
 		
 		def brokerPrefixes = config?.messageBroker?.brokerPrefixes ?: DEFAULT_BROKER_PREFIXES
-		mbc.enableSimpleBroker(brokerPrefixes as String[])
+		mbr.enableSimpleBroker(brokerPrefixes as String[])
 		
 		def applicationDestinationPrefixes = config?.messageBroker?.applicationDestinationPrefixes ?: DEFAULT_APPLICATION_DESTINATION_PREFIXES
-		mbc.setAnnotationMethodDestinationPrefixes(applicationDestinationPrefixes as String[])
+		mbr.setApplicationDestinationPrefixes(applicationDestinationPrefixes as String[])
 	}
 
 	@Override
