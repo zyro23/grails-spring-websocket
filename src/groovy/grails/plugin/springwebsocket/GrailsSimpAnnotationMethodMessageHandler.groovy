@@ -25,7 +25,7 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 	}
 	
 	@Override
-	@Resource(name = "simpMessageConverter")
+	@Resource(name = "brokerMessageConverter")
 	void setMessageConverter(MessageConverter messageConverter) {
 		super.setMessageConverter messageConverter
 	}
