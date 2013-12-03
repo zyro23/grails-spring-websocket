@@ -41,8 +41,9 @@ class SpringWebsocketGrailsPlugin {
 			
 			grailsSimpAnnotationMethodMessageHandler(
 				GrailsSimpAnnotationMethodMessageHandler,
-				ref("brokerMessagingTemplate"),
-				ref("clientOutboundChannel")
+				ref("clientInboundChannel"),
+				ref("clientOutboundChannel"),
+				ref("brokerMessagingTemplate")
 			) {
 				destinationPrefixes = config?.messageBroker?.applicationDestinationPrefixes ?: WebSocketConfig.DEFAULT_APPLICATION_DESTINATION_PREFIXES
 			}

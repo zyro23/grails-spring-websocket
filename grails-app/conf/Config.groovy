@@ -27,6 +27,8 @@ grails {
 		springwebsocket {
 			useCustomConfig = false
 			dispatcherServlet.additionalMappings = ["/foo/*", "/bar/*", "/bla/*", "/hah/*"]
+			clientInboundChannel.threadPoolSize = 4..10
+			clientOutboundChannel.threadPoolSize = 4..10
 			messageBroker {
 				applicationDestinationPrefixes = ["/foo", "/bar"]
 				brokerPrefixes = ["/foo", "/bar"]

@@ -91,7 +91,7 @@ The following configuration options are available (e.g. by adding some or all of
 		<td>Description</td>
 		<td>
 			Prefixes to filter destinations targeting the broker.<br />
-			This setting affects the direction server --> client.<br />
+			This setting affects the direction server --&gt; client.<br />
 			E.g. with the default value, the broker would process a message to <code>/topic/foo</code> but not one to <code>/unknown/prefix/foo</code>.
 		</td>
 	</tr>
@@ -116,6 +116,48 @@ The following configuration options are available (e.g. by adding some or all of
 			Expose a STOMP endpoint at the specified url path (or paths).<br />
 			For every inner Collection, a stomp endpoint is registered with those url path(s).
 			E.g. with the default value, one stomp endpoint is registered and listening at <code>/stomp</code>
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.clientInboundChannel.threadPoolSize</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>Range&lt;Integer&gt;</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>4..10</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Core to max thread pool size for the TaskExecutor of the client inbound channel (client --&gt; server)
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.clientOutboundChannel.threadPoolSize</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>Range&lt;Integer&gt;</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>4..10</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Core to max thread pool size for the TaskExecutor of the client outbound channel (server --&gt; client)
 		</td>
 	</tr>
 </table>

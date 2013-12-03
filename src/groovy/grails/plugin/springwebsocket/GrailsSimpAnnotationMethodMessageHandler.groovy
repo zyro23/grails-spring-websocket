@@ -17,23 +17,16 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 
 	@Resource
 	GrailsApplication grailsApplication
-	@Resource
-	SubscribableChannel clientInboundChannel
 	
-	GrailsSimpAnnotationMethodMessageHandler(SimpMessageSendingOperations brokerTemplate, MessageChannel clientOutboundChannel) {
-		super(brokerTemplate, clientOutboundChannel)
+	GrailsSimpAnnotationMethodMessageHandler(SubscribableChannel clientInboundChannel,
+			MessageChannel clientOutboundChannel, SimpMessageSendingOperations brokerTemplate) {
+		super(clientInboundChannel, clientOutboundChannel, brokerTemplate)
 	}
 	
 	@Override
 	@Resource(name = "brokerMessageConverter")
 	void setMessageConverter(MessageConverter messageConverter) {
 		super.setMessageConverter messageConverter
-	}
-	
-	@Override
-	void afterPropertiesSet() {
-		clientInboundChannel.subscribe this
-		super.afterPropertiesSet()
 	}
 	
 	@Override
