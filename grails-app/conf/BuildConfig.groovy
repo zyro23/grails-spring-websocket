@@ -44,6 +44,9 @@ grails.project.dependency.resolution = {
 		compile "org.springframework:spring-messaging:4.0.0.BUILD-SNAPSHOT"
 		compile "org.springframework:spring-websocket:4.0.0.BUILD-SNAPSHOT"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
+		
+		// FIXME: to be removed once StompBrokerRelayMessageHandler does not depend on reactor-tcp anymore...
+		compile "org.projectreactor:reactor-tcp:1.0.0.RELEASE"
     }
 
     plugins {
