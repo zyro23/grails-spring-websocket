@@ -22,6 +22,93 @@ To install the plugin into a Grails application add the following line to your `
 	
 The plugin is published already to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
 
+## Usage
+
+The plugin makes the Spring websockets/messaging web-mvc controller annotations useable in Grails controllers, too.  
+
+I think basic usage is explained best by example code.
+But: the code below is just some very minimal it-works proof.  
+Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication (Spring Security integration).
+
+### Controller (annotated handler method)
+
+*/grails-app/controllers/example/ExampleController.groovy*:
+
+```groovy
+package example
+
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.SendTo
+
+class ExampleController {
+	
+	def index() {}
+	
+	@MessageMapping("/hello")
+	@SendTo("/topic/hello")
+	protected String hello() {
+		return "hello from controller!"
+	}
+	
+}
+```
+
+Unless you want your handler method to be exposed as controller action, it is important that you define the annotated method as private or protected.
+
+### Client-side (sock.js / stomp.js)
+
+*/grails-app/views/example/index.gsp*:
+
+```gsp
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="layout" content="main"/>
+		
+		<r:require modules="jquery, spring-websocket" />
+		<r:script>
+			var socket = new SockJS("${createLink(uri: '/stomp')}");
+			var client = Stomp.over(socket);
+		
+			client.connect({}, function() {
+				client.subscribe("/topic/hello", function(message) {
+					$("#helloDiv").append(message.body);
+				});
+			});
+		
+			$("#helloButton").click(function() {
+				client.send("/app/hello", {}, "");
+			});
+		</r:script>
+	</head>
+	<body>
+		<button id="helloButton">hello</button>
+		<div id="helloDiv"></div>
+	</body>
+</html>
+```
+
+This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
+For this example, i added a button allowing to trigger a send/receive roundtrip. The use of jquery is **not required**.
+
+### Service (brokerMessagingTemplate bean)
+
+You can also inject and use the <code>brokerMessagingTemplate</code> bean to send messages directly, e.g. from a service.
+
+*/grails-app/services/example/ExampleService.groovy*:
+
+```groovy
+class ExampleService {
+	
+	def brokerMessagingTemplate
+	
+	void hello() {
+		brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
+	}
+	
+}
+```
+
 ## Configuration
 
 If the default values are fine for your application, you are good to go. No configuration required then.
@@ -321,90 +408,3 @@ You can of course use the plugin's `WebSocketConfig` for orientation. It uses `@
 But for bigger config adjustments, it is likely you end up extending Spring's `WebSocketMessageBrokerConfigurationSupport`. 
 
 Future versions of this plugin may cover more configuration options.
-
-## Usage
-
-The plugin makes the Spring websockets/messaging web-mvc controller annotations useable in Grails controllers, too.  
-
-I think basic usage is explained best by example code.
-But: the code below is just some very minimal it-works proof.  
-Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication (Spring Security integration).
-
-### Controller (annotated handler method)
-
-*/grails-app/controllers/example/ExampleController.groovy*:
-
-```groovy
-package example
-
-import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.handler.annotation.SendTo
-
-class ExampleController {
-	
-	def index() {}
-	
-	@MessageMapping("/hello")
-	@SendTo("/topic/hello")
-	protected String hello() {
-		return "hello from controller!"
-	}
-	
-}
-```
-
-Unless you want your handler method to be exposed as controller action, it is important that you define the annotated method as private or protected.
-
-### Client-side (sock.js / stomp.js)
-
-*/grails-app/views/example/index.gsp*:
-
-```gsp
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta name="layout" content="main"/>
-		
-		<r:require modules="jquery, spring-websocket" />
-		<r:script>
-			var socket = new SockJS("${createLink(uri: '/stomp')}");
-			var client = Stomp.over(socket);
-		
-			client.connect({}, function() {
-				client.subscribe("/topic/hello", function(message) {
-					$("#helloDiv").append(message.body);
-				});
-			});
-		
-			$("#helloButton").click(function() {
-				client.send("/app/hello", {}, "");
-			});
-		</r:script>
-	</head>
-	<body>
-		<button id="helloButton">hello</button>
-		<div id="helloDiv"></div>
-	</body>
-</html>
-```
-
-This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
-For this example, i added a button allowing to trigger a send/receive roundtrip. The use of jquery is **not required**.
-
-### Service (brokerMessagingTemplate bean)
-
-You can also inject and use the <code>brokerMessagingTemplate</code> bean to send messages directly, e.g. from a service.
-
-*/grails-app/services/example/ExampleService.groovy*:
-
-```groovy
-class ExampleService {
-	
-	def brokerMessagingTemplate
-	
-	void hello() {
-		brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
-	}
-	
-}
-```
