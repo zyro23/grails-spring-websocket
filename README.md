@@ -77,6 +77,27 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.userDestinationPrefix</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>"/user/"</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			The Prefix to identify user destinations.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
 		<td><strong><code>grails.plugin.springwebsocket.messageBroker.brokerPrefixes</code></strong></td>
 	</tr>
 	<tr>
@@ -93,6 +114,116 @@ The following configuration options are available (e.g. by adding some or all of
 			Prefixes to filter destinations targeting the broker.<br />
 			This setting affects the direction server --&gt; client.<br />
 			E.g. with the default value, the broker would process a message to <code>/topic/foo</code> but not one to <code>/unknown/prefix/foo</code>.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.enabled</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>boolean</code> (groovy truth)</td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>false</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			If enabled, use a "real" stomp relay like RabbitMQ or ActiveMQ (with their corresponding stomp components active).<br />
+			If not (default), a simple Map-based broker implementation will be used.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.host</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>127.0.0.1</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The host of the stomp relay (IP address or hostname).
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.port</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>int</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>61613</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The port of the stomp relay.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.username</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>guest</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The login of the stomp relay.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.password</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>guest</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The passcode of the stomp relay.
 		</td>
 	</tr>
 </table>

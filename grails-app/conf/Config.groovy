@@ -31,7 +31,15 @@ grails {
 			clientOutboundChannel.threadPoolSize = 4..10
 			messageBroker {
 				applicationDestinationPrefixes = ["/foo", "/bar"]
+				userDestinationPrefix = "/user/"
 				brokerPrefixes = ["/foo", "/bar"]
+				stompRelay {
+					enabled = false
+					host = "127.0.0.1"
+					port = 61613
+					username = "guest"
+					password = "guest"
+				}
 			}
 			stompEndpoints = [
 				["/foo", "/bar"],
