@@ -370,7 +370,7 @@ Unless you want your handler method to be exposed as controller action, it is im
 			var socket = new SockJS("${createLink(uri: '/stomp')}");
 			var client = Stomp.over(socket);
 		
-			client.connect("anonymous", "secret", function() {
+			client.connect({}, function() {
 				client.subscribe("/topic/hello", function(message) {
 					$("#helloDiv").append(message.body);
 				});
@@ -390,10 +390,6 @@ Unless you want your handler method to be exposed as controller action, it is im
 
 This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
 For this example, i added a button allowing to trigger a send/receive roundtrip. The use of jquery is **not required**.
-
-Dont be confused about the credentials shown in this snippet - they do not matter.  
-Stomp supports other transports like tcp, too. There, such an authentication can be useful.  
-A websocket connection as transport has to be upgraded from http(s) first. Thats where authentication/credentials/sessions are handled.
 
 ### Service (brokerMessagingTemplate bean)
 
