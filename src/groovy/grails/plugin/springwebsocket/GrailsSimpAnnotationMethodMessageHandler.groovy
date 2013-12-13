@@ -8,9 +8,9 @@ import org.codehaus.groovy.grails.commons.ControllerArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.SubscribableChannel
+import org.springframework.messaging.converter.MessageConverter
 import org.springframework.messaging.simp.SimpMessageSendingOperations
-import org.springframework.messaging.simp.handler.SimpAnnotationMethodMessageHandler
-import org.springframework.messaging.support.converter.MessageConverter
+import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler
 
 @CompileStatic
 class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessageHandler {
