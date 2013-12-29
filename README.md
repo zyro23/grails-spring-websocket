@@ -5,8 +5,7 @@
 *This is reflected by the plugin version which is still a BUILD-SNAPSHOT (at the time of writing)*.
 
 *The plugin is targeting Grails 2.4+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
-*Currently, only the Grails Tomcat-8 Plugin (RC5) is known to work with this plugin.*  
-*But a websocket-supporting version of Jetty should basically do the job as well as a Tomcat-7 (7.0.47+).*
+*Currently, only the Grails Tomcat Plugins (tomcat 7.0.47+/tomcat-8 8.0.0-RC5+) are known to work with this plugin.*  
 - - -
 
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
@@ -20,15 +19,21 @@ To install the plugin into a Grails application add the following line to your `
 
 	compile ":spring-websocket:0.1.BUILD-SNAPSHOT"
 	
-The plugin is published already to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
+The plugin is already published to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
+	
+If you are using the tomcat-8 plugin (8.0.0-RC5+), thats it.  
+If you are using the tomcat plugin (7.0.47+), you need to add the following `BuildConfig.groovy` settings to ensure proper functionality:
+
+	grails.tomcat.nio = true
+	grails.tomcat.scan.enabled = true
 
 ## Usage
 
-The plugin makes the Spring websockets/messaging web-mvc controller annotations useable in Grails controllers, too.  
+The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in Grails controllers, too.  
 
-I think basic usage is explained best by example code.
+I think basic usage is explained best by example code.  
 But: the code below is just some very minimal it-works proof.  
-Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication (Spring Security integration).
+Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication.
 
 ### Controller (annotated handler method)
 
