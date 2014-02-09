@@ -41,12 +41,9 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         // runtime 'mysql:mysql-connector-java:5.1.24'
 		
-		compile "org.springframework:spring-messaging:4.0.0.RELEASE"
-		compile "org.springframework:spring-websocket:4.0.0.RELEASE"
+		compile "org.springframework:spring-messaging:4.0.1.RELEASE"
+		compile "org.springframework:spring-websocket:4.0.1.RELEASE"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.2.3"
-		
-		// FIXME: to be removed once StompBrokerRelayMessageHandler does not depend on reactor-tcp anymore...
-		compile "org.projectreactor:reactor-tcp:1.0.0.RELEASE"
     }
 
     plugins {

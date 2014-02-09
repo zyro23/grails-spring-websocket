@@ -4,15 +4,16 @@ import javax.annotation.Resource
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.annotation.Configuration
-import org.springframework.messaging.simp.config.ChannelRegistration;
+import org.springframework.messaging.converter.MessageConverter
+import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 
 @Configuration
 @EnableWebSocketMessageBroker
-class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	
 	static final List<String> DEFAULT_APPLICATION_DESTINATION_PREFIXES = ["/app"]
 	static final List<String> DEFAULT_BROKER_PREFIXES = ["/queue", "/topic"]
