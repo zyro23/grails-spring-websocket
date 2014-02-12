@@ -20,8 +20,8 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	static final boolean DEFAULT_RELAY_ENABLED = false
 	static final String DEFAULT_RELAY_HOST = "127.0.0.1"
 	static final int DEFAULT_RELAY_PORT = 61613
-	static final String DEFAULT_RELAY_USERNAME = "guest"
-	static final String DEFAULT_RELAY_PASSWORD = "guest"
+	static final String DEFAULT_RELAY_LOGIN = "guest"
+	static final String DEFAULT_RELAY_PASSCODE = "guest"
 	static final List<List<String>> DEFAULT_STOMP_ENDPOINTS = [["/stomp"]]
 	static final Range<Integer> DEFAULT_THREAD_POOL_SIZE = 4..10
 	static final String DEFAULT_USER_DESTINATION_PREFIX = "/user/"
@@ -57,8 +57,10 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 			def relay = mbr.enableStompBrokerRelay(brokerPrefixes as String[])
 			relay.relayHost = config?.messageBroker?.stompRelay?.host ?: DEFAULT_RELAY_HOST
 			relay.relayPort = config?.messageBroker?.stompRelay?.port ?: DEFAULT_RELAY_PORT
-			relay.applicationLogin = config?.messageBroker?.stompRelay?.username ?: DEFAULT_RELAY_USERNAME
-			relay.applicationPasscode = config?.messageBroker?.stompRelay?.password ?: DEFAULT_RELAY_PASSWORD
+			relay.systemLogin = config?.messageBroker?.stompRelay?.systemLogin ?: DEFAULT_RELAY_LOGIN
+			relay.systemPasscode = config?.messageBroker?.stompRelay?.systemPasscode ?: DEFAULT_RELAY_PASSCODE
+			relay.clientLogin = config?.messageBroker?.stompRelay?.clientLogin ?: DEFAULT_RELAY_LOGIN
+			relay.clientPasscode = config?.messageBroker?.stompRelay?.clientPasscode ?: DEFAULT_RELAY_PASSCODE
 		} else {
 			mbr.enableSimpleBroker(brokerPrefixes as String[])
 		}

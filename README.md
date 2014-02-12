@@ -139,7 +139,7 @@ The following configuration options are available (e.g. by adding some or all of
 			By default, the <code>GrailsDispatcherServlet</code> is mapped to <code>*.dispatch</code>.<br />
 			Because the sock.js support in Spring is not using a separate servlet but additional handlers for the <code>DispatcherServlet</code>, the relevant endpoints have to be covered by the servlet-mapping.<br />
 			If the default value is too generic for your application, use this setting to narrow the servlet mappings down.<br />
-			Usually, you will want to have at least your STOMP endpoints covered.
+			Usually, you will want to have at least your stomp endpoints covered.
 		</td>
 	</tr>
 </table>
@@ -279,7 +279,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.username</code></strong></td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.systemLogin</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -293,7 +293,7 @@ The following configuration options are available (e.g. by adding some or all of
 		<td>Description</td>
 		<td>
 			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The login of the stomp relay.
+			The login of the stomp relay for the shared system connection.
 		</td>
 	</tr>
 </table>
@@ -301,7 +301,7 @@ The following configuration options are available (e.g. by adding some or all of
 <table>
 	<tr>
 		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.password</code></strong></td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.systemPasscode</code></strong></td>
 	</tr>
 	<tr>
 		<td>Type</td>
@@ -315,7 +315,51 @@ The following configuration options are available (e.g. by adding some or all of
 		<td>Description</td>
 		<td>
 			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The passcode of the stomp relay.
+			The passcode of the stomp relay for the shared system connection.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.clientLogin</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>guest</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The login of the stomp relay for the client connections.
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.clientPasscode</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>String</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>guest</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Only relevant if <code>stompRelay.enabled = true</code>.<br />
+			The passcode of the stomp relay for the client connections.
 		</td>
 	</tr>
 </table>

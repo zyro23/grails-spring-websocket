@@ -37,8 +37,10 @@ grails {
 					enabled = false
 					host = "127.0.0.1"
 					port = 61613
-					username = "guest"
-					password = "guest"
+					systemLogin = "guest"
+					systemPasscode = "guest"
+					clientLogin = "guest"
+					clientPasscode = "guest"
 				}
 			}
 			stompEndpoints = [
