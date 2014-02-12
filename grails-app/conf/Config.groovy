@@ -20,34 +20,3 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
-
-/*
-grails {
-	plugin
-		springwebsocket {
-			useCustomConfig = false
-			dispatcherServlet.additionalMappings = ["/foo/*", "/bar/*", "/bla/*", "/hah/*"]
-			clientInboundChannel.threadPoolSize = 4..10
-			clientOutboundChannel.threadPoolSize = 4..10
-			messageBroker {
-				applicationDestinationPrefixes = ["/foo", "/bar"]
-				userDestinationPrefix = "/user/"
-				brokerPrefixes = ["/foo", "/bar"]
-				stompRelay {
-					enabled = false
-					host = "127.0.0.1"
-					port = 61613
-					systemLogin = "guest"
-					systemPasscode = "guest"
-					clientLogin = "guest"
-					clientPasscode = "guest"
-				}
-			}
-			stompEndpoints = [
-				["/foo", "/bar"],
-				["/bla", "/hah"]
-			]
-		}
-	}
-}
-*/

@@ -1,3 +1,4 @@
+import grails.plugin.springwebsocket.ConfigUtils
 import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler
 import grails.plugin.springwebsocket.WebSocketConfig
 
@@ -19,8 +20,9 @@ class SpringWebsocketGrailsPlugin {
 	def scm = [ url: "https://github.com/zyro23/grails-spring-websocket" ]
 
 	def doWithWebDescriptor = { xml ->
-		def config = application.config.grails?.plugin?.springwebsocket
-		def additionalMappings = config?.dispatcherServlet?.additionalMappings ?: ["/*"]
+		def config = ConfigUtils.springWebsocketConfig
+		
+		def additionalMappings = config.dispatcherServlet.additionalMappings
 		additionalMappings.each { urlPattern ->
 			xml."servlet-mapping"[-1] + {
 				"servlet-mapping" {
@@ -32,11 +34,11 @@ class SpringWebsocketGrailsPlugin {
 	}
 
 	def doWithSpring = {
-		def config = application.config.grails?.plugin?.springwebsocket
+		def config = ConfigUtils.springWebsocketConfig
 		
 		httpRequestHandlerAdapter HttpRequestHandlerAdapter
 		
-		if (!config?.useCustomConfig) {
+		if (!config.useCustomConfig) {
 			webSocketConfig WebSocketConfig
 			
 			grailsSimpAnnotationMethodMessageHandler(
@@ -45,9 +47,9 @@ class SpringWebsocketGrailsPlugin {
 				ref("clientOutboundChannel"),
 				ref("brokerMessagingTemplate")
 			) {
-				destinationPrefixes = config?.messageBroker?.applicationDestinationPrefixes ?: WebSocketConfig.DEFAULT_APPLICATION_DESTINATION_PREFIXES
+				destinationPrefixes = config.messageBroker.applicationDestinationPrefixes
 			}
 		}
 	}
-
+	
 }
