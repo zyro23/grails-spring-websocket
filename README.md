@@ -5,7 +5,7 @@
 *This is reflected by the plugin version which is still a BUILD-SNAPSHOT (at the time of writing)*.
 
 *The plugin is targeting Grails 2.4+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
-*Currently, only the Grails Tomcat Plugins (tomcat-7.0.47+/tomcat8-8.0.1.1+) are known to work with this plugin.*  
+*Currently, only the Grails Tomcat Plugins (tomcat-7.0.52+/tomcat8-8.0.1.1+) are known to work with this plugin.*  
 - - -
 
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
@@ -22,7 +22,7 @@ To install the plugin into a Grails application add the following line to your `
 The plugin is already published to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
-If you are using the tomcat plugin (7.0.47+), you need to add the following `BuildConfig.groovy` settings to ensure proper functionality:
+If you are using the tomcat plugin (7.0.52+), you need to add the following `BuildConfig.groovy` settings to ensure proper functionality:
 
 	grails.tomcat.nio = true
 	grails.tomcat.scan.enabled = true
@@ -94,7 +94,13 @@ Unless you want your handler method to be exposed as controller action, it is im
 ```
 
 This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
-For this example, i added a button allowing to trigger a send/receive roundtrip. The use of jquery is **not required**.
+For this example, i added a button allowing to trigger a send/receive roundtrip.
+
+While this example shows jquery used with the resources-plugin, the use of jquery is **not required**.  
+If you prefer the asset-pipeline plugin instead of the resources plugin, you can use the <code>spring-websocket</code> (.js) bundle - it includes sock.js and stomp.js:
+```
+<asset:javascript src="spring-websocket" />
+```
 
 ### Service (brokerMessagingTemplate bean)
 
