@@ -68,21 +68,25 @@ Unless you want your handler method to be exposed as controller action, it is im
 	<head>
 		<meta name="layout" content="main"/>
 		
-		<r:require modules="jquery, spring-websocket" />
-		<r:script>
-			var socket = new SockJS("${createLink(uri: '/stomp')}");
-			var client = Stomp.over(socket);
+		<asset:javascript src="jquery" />
+		<asset:javascript src="spring-websocket" />
 		
-			client.connect({}, function() {
-				client.subscribe("/topic/hello", function(message) {
-					$("#helloDiv").append(message.body);
+		<script type="text/javascript">
+		 	$(function() { 
+				var socket = new SockJS("${createLink(uri: '/stomp')}");
+				var client = Stomp.over(socket);
+			
+				client.connect({}, function() {
+					client.subscribe("/topic/hello", function(message) {
+						$("#helloDiv").append(message.body);
+					});
+				});
+			
+				$("#helloButton").click(function() {
+					client.send("/app/hello", {}, "");
 				});
 			});
-		
-			$("#helloButton").click(function() {
-				client.send("/app/hello", {}, "");
-			});
-		</r:script>
+		</script> 
 	</head>
 	<body>
 		<button id="helloButton">hello</button>
@@ -94,10 +98,10 @@ Unless you want your handler method to be exposed as controller action, it is im
 This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
 For this example, i added a button allowing to trigger a send/receive roundtrip.
 
-While this example shows jquery used with the resources-plugin, the use of jquery is **not required**.  
-If you prefer the asset-pipeline plugin instead of the resources plugin, you can use the <code>spring-websocket</code> (.js) bundle - it includes sock.js and stomp.js:
+While this example shows jquery used with the asset-pipeline plugin, the use of jquery is **not required**.  
+If you prefer the resources plugin instead of the asset-pipeline plugin, you can use the <code>spring-websocket</code> resources module - it includes sock.js and stomp.js:
 ```
-<asset:javascript src="spring-websocket" />
+<r:require module="spring-websocket" />
 ```
 
 ### Service (brokerMessagingTemplate bean)
