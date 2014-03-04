@@ -19,8 +19,6 @@ To install the plugin into a Grails application add the following line to your `
 
 	compile ":spring-websocket:1.0.0.M1"
 	
-The plugin is already published to the Grails plugin repository, but because there is no stable version out yet, it is not listed in the plugin portal.
-	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
 If you are using the tomcat plugin (7.0.52+), you need to add the following `BuildConfig.groovy` settings to ensure proper functionality:
 
