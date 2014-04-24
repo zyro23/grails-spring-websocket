@@ -4,7 +4,7 @@
 *The current state is still a work in progress with room for improvements.*  
 *This is reflected by the plugin version which is still a milestone build (at the time of writing)*.
 
-*The plugin is targeting Grails 2.4+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
+*The plugin is targeting Grails 2.4.0.M2+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
 *Currently, only the Grails Tomcat Plugins (tomcat-7.0.52+/tomcat8-8.0.1.1+) are known to work with this plugin.*  
 - - -
 
@@ -17,10 +17,10 @@ That is mentioned multiple times in this readme because there is everything expl
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.0.0.M1"
+	compile ":spring-websocket:1.0.0.M2"
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
-If you are using the tomcat plugin (7.0.52+), you need to add the following `BuildConfig.groovy` settings to ensure proper functionality:
+If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:
 
 	grails.tomcat.nio = true
 	grails.tomcat.scan.enabled = true
@@ -98,11 +98,13 @@ Unless you want your handler method to be exposed as controller action, it is im
 This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.  
 For this example, i added a button allowing to trigger a send/receive roundtrip.
 
-While this example shows jquery used with the asset-pipeline plugin, the use of jquery is **not required**.  
+While this example shows jquery used with the asset-pipeline plugin, the use of jquery is **not required**.
+ 
 If you prefer the resources plugin instead of the asset-pipeline plugin, you can use the <code>spring-websocket</code> resources module - it includes sock.js and stomp.js:
 ```
 <r:require module="spring-websocket" />
 ```
+Note: resources-1.2.7 does not compile for me against grails-2.4.0.M2.
 
 ### Service (brokerMessagingTemplate bean)
 
