@@ -140,15 +140,14 @@ The following configuration options are available (e.g. by adding some or all of
 	</tr>
 	<tr>
 		<td>Default</td>
-		<td><code>["/*"]</code></td>
+		<td><code>["/stomp/*"]</code></td>
 	</tr>
 	<tr>
 		<td>Description</td>
 		<td>
 			By default, the <code>GrailsDispatcherServlet</code> is mapped to <code>*.dispatch</code>.<br />
 			Because the sock.js support in Spring is not using a separate servlet but additional handlers for the <code>DispatcherServlet</code>, the relevant endpoints have to be covered by the servlet-mapping.<br />
-			If the default value is too generic for your application, use this setting to narrow the servlet mappings down.<br />
-			Usually, you will want to have at least your stomp endpoints covered.
+			Usually, you will want to have your stomp endpoints covered.
 		</td>
 	</tr>
 </table>

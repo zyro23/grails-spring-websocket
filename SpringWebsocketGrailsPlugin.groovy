@@ -2,11 +2,13 @@ import grails.plugin.springwebsocket.ConfigUtils
 import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler
 import grails.plugin.springwebsocket.WebSocketConfig
 
+import org.springframework.context.ApplicationContext
+import org.springframework.web.servlet.handler.AbstractHandlerMapping
 import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
 class SpringWebsocketGrailsPlugin {
 	
-	def version = "1.0.0.RC1"
+	def version = "1.0.0.BUILD-SNAPSHOT"
 	def grailsVersion = "2.4 > *"
 	def pluginExcludes = ["grails-app/views/error.gsp"]
 
@@ -50,6 +52,11 @@ class SpringWebsocketGrailsPlugin {
 				destinationPrefixes = config.messageBroker.applicationDestinationPrefixes
 			}
 		}
+	}
+	
+	def doWithApplicationContext = { ctx ->
+		// TODO: think this should be configurable via spring websocket cfg?
+		((AbstractHandlerMapping) ctx.stompWebSocketHandlerMapping).alwaysUseFullPath = true
 	}
 	
 }

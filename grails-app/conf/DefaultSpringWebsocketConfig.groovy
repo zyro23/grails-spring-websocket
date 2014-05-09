@@ -2,7 +2,7 @@ grails {
 	plugin {
 		springwebsocket {
 			useCustomConfig = false
-			dispatcherServlet.additionalMappings = ["/*"]
+			dispatcherServlet.additionalMappings = ["/stomp/*"]
 			clientInboundChannel.threadPoolSize = 4..10
 			clientOutboundChannel.threadPoolSize = 4..10
 			messageBroker {
