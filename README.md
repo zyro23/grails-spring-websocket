@@ -1,10 +1,7 @@
 # Spring Websocket Grails Plugin
 
 - - -
-*The current state is still a work in progress with room for improvements.*  
-*This is reflected by the plugin version which is still a milestone build (at the time of writing)*.
-
-*The plugin is targeting Grails 2.4.0.RC2+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
+*The plugin is targeting Grails 2.4.0+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
 *Currently, only the Grails Tomcat Plugins (tomcat-7.0.52+/tomcat8-8.0.1.1+) are known to work with this plugin.*  
 - - -
 
@@ -17,7 +14,7 @@ That is mentioned multiple times in this readme because there is everything expl
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.0.0.RC2"
+	compile ":spring-websocket:1.0.0"
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
 If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:
