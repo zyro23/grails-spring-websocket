@@ -10,11 +10,27 @@ This plugin aims at making the websocket support introduced in Spring 4.0 availa
 You can use the corresponding Spring docs/apis/samples as a reference.  
 That is mentioned multiple times in this readme because there is everything explained in fine detail.
 
+Grails version requirements:
+<table>
+	<tr>
+		<th>grails-spring-websocket</th>
+		<th>Grails</th>
+	<tr>
+	<tr>
+		<td>1.0</td>
+		<td>2.4.0 - 2.4.2</td>
+	</tr>
+	<tr>
+		<td>1.1</td>
+		<td>2.4.3+</td>
+	</tr>
+</table>
+
 ## Installation
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.0.0"
+	compile ":spring-websocket:1.1"
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
 If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:
@@ -46,8 +62,8 @@ class ExampleController {
 	
 	@MessageMapping("/hello")
 	@SendTo("/topic/hello")
-	protected String hello() {
-		return "hello from controller!"
+	protected String hello(String world) {
+		return "hello from controller, ${world}!"
 	}
 	
 }
@@ -75,12 +91,12 @@ Unless you want your handler method to be exposed as controller action, it is im
 			
 				client.connect({}, function() {
 					client.subscribe("/topic/hello", function(message) {
-						$("#helloDiv").append(message.body);
+						$("#helloDiv").append(JSON.parse(message.body));
 					});
 				});
 			
 				$("#helloButton").click(function() {
-					client.send("/app/hello", {}, "");
+					client.send("/app/hello", {}, JSON.stringify("world"));
 				});
 			});
 		</script> 

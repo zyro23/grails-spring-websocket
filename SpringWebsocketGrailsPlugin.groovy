@@ -8,8 +8,8 @@ import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter
 
 class SpringWebsocketGrailsPlugin {
 	
-	def version = "1.0.0"
-	def grailsVersion = "2.4 > *"
+	def version = "1.1"
+	def grailsVersion = "2.4.3 > *"
 	def pluginExcludes = ["grails-app/views/error.gsp"]
 
 	def title = "Spring Websocket Plugin"

@@ -20,28 +20,21 @@ grails.project.fork = [
 grails.project.dependency.resolver = "maven" // or ivy
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
-    inherits("global") {
-        // uncomment to disable ehcache
-        // excludes 'ehcache'
-    }
+    inherits("global") {}
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
         grailsCentral()
         mavenLocal()
         mavenCentral()
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        // runtime 'mysql:mysql-connector-java:5.1.24'
+		def springExcludes = {
+			excludes "spring-beans", "spring-context", "spring-core", "spring-web", "spring-webmvc"
+		}
 		
-		compile "org.springframework:spring-messaging:4.0.5.RELEASE"
-		compile "org.springframework:spring-websocket:4.0.5.RELEASE"
-		compile "com.fasterxml.jackson.core:jackson-databind:2.3.3"
+		compile "org.springframework:spring-messaging:4.0.6.RELEASE", springExcludes
+		compile "org.springframework:spring-websocket:4.0.6.RELEASE", springExcludes
+		compile "com.fasterxml.jackson.core:jackson-databind:2.4.1.3"
     }
 
     plugins {
