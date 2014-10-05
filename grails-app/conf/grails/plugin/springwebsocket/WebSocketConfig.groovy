@@ -11,7 +11,16 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 @EnableWebSocketMessageBroker
 class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-	def config
+	ConfigObject config
+	
+	/**
+	 *  using constructor-based injection here because the overridden configuration methods
+	 *  are called (it seems) before property injection or @PostConstruct handling take place 
+	 */
+	WebSocketConfig(ConfigObject config) {
+		assert config
+		this.config = config
+	}
 
 	@Override
 	void configureClientInboundChannel(ChannelRegistration cr) {
