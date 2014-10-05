@@ -6,3 +6,4 @@
 /.link_to_grails_plugins
 /plugin.xml
 /grails-spring-websocket-*
+/war/WEB-INF
