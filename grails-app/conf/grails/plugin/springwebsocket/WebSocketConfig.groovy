@@ -1,7 +1,6 @@
 package grails.plugin.springwebsocket
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.messaging.converter.MessageConverter
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
@@ -11,9 +10,9 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
-	
-	def config = ConfigUtils.springWebsocketConfig
-	
+
+	def config
+
 	@Override
 	void configureClientInboundChannel(ChannelRegistration cr) {
 		def poolSizeCore = config.clientInboundChannel.threadPoolSize.from
@@ -27,35 +26,35 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 		def poolSizeMax = config.clientOutboundChannel.threadPoolSize.to
 		cr.taskExecutor().corePoolSize(poolSizeCore).maxPoolSize(poolSizeMax)
 	}
-	
+
 	@Override
 	void configureMessageBroker(MessageBrokerRegistry mbr) {
-		def brokerPrefixes = config.messageBroker.brokerPrefixes
-		def relayEnabled = config.messageBroker.stompRelay.enabled
+		def stompRelayConf = config.messageBroker.stompRelay
+		String[] brokerPrefixes = config.messageBroker.brokerPrefixes
+		def relayEnabled = stompRelayConf.enabled
 		if (relayEnabled) {
-			def relay = mbr.enableStompBrokerRelay(brokerPrefixes as String[])
-			relay.relayHost = config.messageBroker.stompRelay.host
-			relay.relayPort = config.messageBroker.stompRelay.port
-			relay.systemLogin = config.messageBroker.stompRelay.systemLogin
-			relay.systemPasscode = config.messageBroker.stompRelay.systemPasscode
-			relay.clientLogin = config.messageBroker.stompRelay.clientLogin
-			relay.clientPasscode = config.messageBroker.stompRelay.clientPasscode
+			def relay = mbr.enableStompBrokerRelay(brokerPrefixes)
+			relay.relayHost = stompRelayConf.host
+			relay.relayPort = stompRelayConf.port
+			relay.systemLogin = stompRelayConf.systemLogin
+			relay.systemPasscode = stompRelayConf.systemPasscode
+			relay.clientLogin = stompRelayConf.clientLogin
+			relay.clientPasscode = stompRelayConf.clientPasscode
 		} else {
-			mbr.enableSimpleBroker(brokerPrefixes as String[])
+			mbr.enableSimpleBroker(brokerPrefixes)
 		}
-		
-		def applicationDestinationPrefixes = config.messageBroker.applicationDestinationPrefixes
-		mbr.setApplicationDestinationPrefixes(applicationDestinationPrefixes as String[])
-		
+
+		String[] applicationDestinationPrefixes = config.messageBroker.applicationDestinationPrefixes
+		mbr.setApplicationDestinationPrefixes(applicationDestinationPrefixes)
+
 		def userDestinationPrefix = config.messageBroker.userDestinationPrefix
 		mbr.setUserDestinationPrefix userDestinationPrefix
 	}
 
 	@Override
 	void registerStompEndpoints(StompEndpointRegistry ser) {
-		def stompEndpoints = config.stompEndpoints
-		stompEndpoints.each {
-			ser.addEndpoint(it as String[]).withSockJS()
+		for (String[] endpoint in config.stompEndpoints) {
+			ser.addEndpoint(endpoint).withSockJS()
 		}
 	}
 
