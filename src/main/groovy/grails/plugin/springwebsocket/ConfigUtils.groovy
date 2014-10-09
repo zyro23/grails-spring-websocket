@@ -2,7 +2,7 @@ package grails.plugin.springwebsocket
 
 import grails.util.Environment
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 
 class ConfigUtils {
 

@@ -1,5 +1,6 @@
 package grails.plugin.springwebsocket
 
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
@@ -14,7 +15,7 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	ConfigObject config
 	
 	/**
-	 *  using constructor-based injection here because the overridden configuration methods
+	 *  allow constructor-based injection here because the overridden configuration methods
 	 *  are called (it seems) before property injection or @PostConstruct handling take place 
 	 */
 	WebSocketConfig(ConfigObject config) {
