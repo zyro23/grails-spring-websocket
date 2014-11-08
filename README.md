@@ -22,7 +22,11 @@ Grails version requirements:
 	</tr>
 	<tr>
 		<td>1.1.x</td>
-		<td>2.4.3+</td>
+		<td>2.4.3</td>
+	</tr>
+	<tr>
+		<td>1.2.x</td>
+		<td>2.4.4+</td>
 	</tr>
 </table>
 
@@ -30,7 +34,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.1.0"
+	compile ":spring-websocket:1.2.0"
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
 If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:

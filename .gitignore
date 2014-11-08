@@ -7,3 +7,6 @@
 /plugin.xml
 /grails-spring-websocket-*
 /web-app/WEB-INF/tld
+/bin
+/.gradle
+/build

@@ -14,9 +14,9 @@ grails.project.dependency.resolution = {
 			excludes "spring-beans", "spring-context", "spring-core", "spring-web", "spring-webmvc"
 		}
 
-		compile "org.springframework:spring-messaging:4.0.6.RELEASE", springExcludes
-		compile "org.springframework:spring-websocket:4.0.6.RELEASE", springExcludes
-		compile "com.fasterxml.jackson.core:jackson-databind:2.4.1.3"
+		compile "org.springframework:spring-messaging:4.0.7.RELEASE", springExcludes
+		compile "org.springframework:spring-websocket:4.0.7.RELEASE", springExcludes
+		compile "com.fasterxml.jackson.core:jackson-databind:2.4.3"
     }
 
     plugins {
