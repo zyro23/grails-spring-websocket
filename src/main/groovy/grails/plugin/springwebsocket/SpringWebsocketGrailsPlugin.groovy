@@ -2,12 +2,9 @@ package grails.plugin.springwebsocket
 
 import grails.core.GrailsApplication
 import grails.core.support.GrailsApplicationAware
-import grails.plugin.springwebsocket.ConfigUtils
-import grails.plugin.springwebsocket.WebSocketConfig
 
 import org.springframework.boot.context.embedded.ServletRegistrationBean
 import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.ConfigurationClassPostProcessor
 import org.springframework.web.servlet.handler.AbstractHandlerMapping
 
 class SpringWebsocketGrailsPlugin implements GrailsApplicationAware {
@@ -25,8 +22,6 @@ class SpringWebsocketGrailsPlugin implements GrailsApplicationAware {
 	GrailsApplication grailsApplication
 	
 	def doWithSpring = {
-		grailsSpringWebsocketConfigurationClassPostProcessor ConfigurationClassPostProcessor
-		
 		def config = ConfigUtils.getSpringWebsocketConfig grailsApplication
 		
 		if (!config.useCustomConfig) {
