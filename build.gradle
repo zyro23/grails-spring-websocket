@@ -1,54 +1,101 @@
+ext {
+	grailsVersion = "3.0.0.BUILD-SNAPSHOT"
+	java8Compatible = org.gradle.api.JavaVersion.current().java8Compatible
+	gradleWrapperVersion = "2.3-20141120230022+0000"
+}
+
 buildscript {
+	ext {
+		grailsVersion = "3.0.0.BUILD-SNAPSHOT"
+	}
 	repositories {
 		mavenLocal()
-		jcenter()
 		mavenCentral()
-		maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
+		maven { url "http://repo.grails.org/grails/core" }
+		maven { url "http://repo.spring.io/libs-release" }
 	}
 	dependencies {
-		classpath "org.grails:grails-gradle-plugin:3.0.0.BUILD-SNAPSHOT"
+		classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.0.18"
 	}
-}
-
-apply plugin: "grails-core"
-apply plugin: "maven"
-apply plugin: "eclipse"
-
-repositories {
-	mavenLocal()
-	jcenter()
-	mavenCentral()
-	maven { url "https://repo.grails.org/grails/libs-snapshots-local" }
-}
-
-configurations {
-	provided
-}
-
-dependencies {
-	provided "javax.servlet:javax.servlet-api:3.1.0"
-	
-	compile "org.grails:grails-dependencies:3.0.0.BUILD-SNAPSHOT"
-	compile "org.grails:grails-web-boot:3.0.0.BUILD-SNAPSHOT"
-	// TODO: versions, excludes, etc.
-	compile "org.springframework:spring-websocket:4.0.7.RELEASE"
-	compile "org.springframework:spring-messaging:4.0.7.RELEASE"
-	compile "com.fasterxml.jackson.core:jackson-databind:2.4.3"
 }
 
 version "2.0.0.BUILD-SNAPSHOT"
 group "org.grails.plugins"
+	
+apply plugin: "spring-boot"
+apply plugin: "asset-pipeline"
+apply plugin: "grails-plugin"
+apply plugin: "grails-gsp"
+apply plugin: "maven"
+apply plugin: "maven-publish"
+apply plugin: "eclipse"
+apply plugin: "idea"
+	
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven { url "http://repo.grails.org/grails/core" }
+}
 
-jar.baseName = "spring-websocket"
+dependencies {
+	provided "org.springframework.boot:spring-boot-starter-logging"
+	provided "org.springframework.boot:spring-boot-starter-actuator"
+	provided "org.springframework.boot:spring-boot-autoconfigure"
+	provided "org.springframework.boot:spring-boot-starter-tomcat"
+	provided "org.grails:grails-web-boot:$grailsVersion"
+	provided "org.grails:grails-dependencies:$grailsVersion"
+	provided "javax.servlet:javax.servlet-api:3.1.0"
+	testCompile "org.grails:grails-plugin-testing:$grailsVersion"
+	console "org.grails:grails-console:$grailsVersion"
+	
+	compile "org.springframework:spring-messaging:4.1.2.RELEASE"
+	compile "org.springframework:spring-websocket:4.1.2.RELEASE"
+	compile "com.fasterxml.jackson.core:jackson-databind:2.4.3"
+}
 
-sourceSets {
-	main {
-		compileClasspath += [configurations.provided]
-	}
-	test {
-		compileClasspath += [configurations.provided]
-		runtimeClasspath += [configurations.provided]
+eclipse {
+	classpath {
+		plusConfigurations += [configurations.provided]
 	}
 }
 
-eclipse.classpath.plusConfigurations += [configurations.provided]
+idea {
+	module {
+		scopes.PROVIDED.plus += [configurations.provided]
+	}
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			artifactId project.name
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+			artifact source: "${sourceSets.main.output.classesDir}/META-INF/grails-plugin.xml", classifier: "plugin", extension: "xml"
+		}
+	}
+	repositories {
+		maven {
+			credentials {
+				username project.properties.get("grailsPluginsUsername")
+				password project.properties.get("grailsPluginsPassword")
+			}
+			url "https://repo.grails.org/grails/libs-snapshots-local"
+		}
+	}
+}
+
+run {
+	minHeapSize = "768m"
+	maxHeapSize = "768m"
+	if(!java8Compatible) {
+		jvmArgs "-XX:PermSize=96m", "-XX:MaxPermSize=256m"
+	}
+	jvmArgs "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:CICompilerCount=3"
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = gradleWrapperVersion
+}

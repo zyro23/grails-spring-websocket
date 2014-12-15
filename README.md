@@ -1,10 +1,5 @@
 # Spring Websocket Grails Plugin
 
-- - -
-*The plugin is targeting Grails 2.4.0+. Lower versions will not work because they lack the mandatory Spring version 4.0+.*  
-*Currently, only the Grails Tomcat Plugins (tomcat-7.0.52+/tomcat8-8.0.1.1+) are known to work with this plugin.*  
-- - -
-
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
 
 You can use the corresponding Spring docs/apis/samples as a reference.  
@@ -24,20 +19,18 @@ Grails version requirements:
 		<td>1.1.x</td>
 		<td>2.4.3+</td>
 	</tr>
+	<tr>
+		<td>2.0.x</td>
+		<td>3.0.0+</td>
+	</tr>
 </table>
 
 ## Installation
 
-To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
+To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile ":spring-websocket:1.1.0"
+	compile "org.grails.plugins:spring-websocket:2.0.0.BUILD-SNAPSHOT"
 	
-If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
-If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:
-
-	grails.tomcat.nio = true
-	grails.tomcat.scan.enabled = true
-
 ## Usage
 
 The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in Grails controllers, too.  
@@ -112,11 +105,6 @@ This would be the index view of the controller above. The js connects to the mes
 For this example, i added a button allowing to trigger a send/receive roundtrip.
 
 While this example shows jquery used with the asset-pipeline plugin, the use of jquery is **not required**.
- 
-If you prefer the resources plugin instead of the asset-pipeline plugin, you can use the <code>spring-websocket</code> resources module - it includes sock.js and stomp.js:
-```
-<r:require module="spring-websocket" />
-```
 
 ### Service (brokerMessagingTemplate bean)
 
