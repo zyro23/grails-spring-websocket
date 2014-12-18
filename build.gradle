@@ -69,7 +69,7 @@ idea {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			artifactId project.name
+			artifactId "spring-websocket"
 			from components.java
 			artifact sourcesJar
 			artifact javadocJar
