@@ -12,14 +12,6 @@ Grails version requirements:
 		<th>Grails</th>
 	<tr>
 	<tr>
-		<td>1.0.x</td>
-		<td>2.4.0 - 2.4.2</td>
-	</tr>
-	<tr>
-		<td>1.1.x</td>
-		<td>2.4.3+</td>
-	</tr>
-	<tr>
 		<td>2.0.x</td>
 		<td>3.0.0+</td>
 	</tr>
@@ -84,7 +76,7 @@ Unless you want your handler method to be exposed as controller action, it is im
 			
 				client.connect({}, function() {
 					client.subscribe("/topic/hello", function(message) {
-						$("#helloDiv").append(JSON.parse(message.body));
+						$("#helloDiv").append(message.body);
 					});
 				});
 			
@@ -126,343 +118,36 @@ class ExampleService {
 
 ## Configuration
 
+Configuration relies on Spring java config, especially `@EnableWebSocketMessageBroker`. 
+
+### Default Configuration
+
+By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is used.
+
+* An in-memory `Map`-based message broker implementation is used.
+* The prefixes for broker destinations ("outgoing messages") are: `/queue` or `/topic`
+* The prefix for application destinations ("incoming messages") is: `/app`
+* The stomp-endpoint URI is: `/stomp` 
+* A `SimpAnnotationMethodMessageHandler` bean is defined to allow Grails controller methods to act as message handlers
+
 If the default values are fine for your application, you are good to go. No configuration required then.
 
-The following configuration options are available (e.g. by adding some or all of them to your `Config.groovy`):
+### Custom Configuration
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.dispatcherServlet.additionalMappings</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Collection&lt;String&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>["/stomp/*"]</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			By default, the <code>GrailsDispatcherServlet</code> is mapped to <code>*.dispatch</code>.<br />
-			Because the sock.js support in Spring is not using a separate servlet but additional handlers for the <code>DispatcherServlet</code>, the relevant endpoints have to be covered by the servlet-mapping.<br />
-			Usually, you will want to have your stomp endpoints covered.
-		</td>
-	</tr>
-</table>
+If you want to customize the defaults, you should override the config bean providing your own bean named `webSocketConfig`.
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.applicationDestinationPrefixes</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Collection&lt;String&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td><td><code>["/app"]</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Prefixes to filter destinations targeting application annotated methods.<br />
-			Annotations should not contain the destination prefix.<br />
-			E.g. with the default value, this means if your js client sends to <code>/app/foo/bar</code>, your controller annotation should look like <code>@MessageMapping("/foo/bar")</code>.
-		</td>
-	</tr>
-</table>
+As starting point, you can create a config class/bean very similar to the default config with:
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.userDestinationPrefix</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>"/user/"</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			The Prefix to identify user destinations.
-		</td>
-	</tr>
-</table>
+	grails create-web-socket-config my.package.name.MyClassName
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.brokerPrefixes</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Collection&lt;String&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>["/queue", "/topic"]</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Prefixes to filter destinations targeting the broker.<br />
-			This setting affects the direction server --&gt; client.<br />
-			E.g. with the default value, the broker would process a message to <code>/topic/foo</code> but not one to <code>/unknown/prefix/foo</code>.
-		</td>
-	</tr>
-</table>
+That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`, e.g. like this:
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.enabled</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>boolean</code> (groovy truth)</td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>false</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			If enabled, use a "real" stomp relay like RabbitMQ or ActiveMQ (with their corresponding stomp components active).<br />
-			If not (default), a simple Map-based broker implementation will be used.
-		</td>
-	</tr>
-</table>
+*/grails-app/conf/spring/resources.groovy*:
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.host</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>127.0.0.1</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The host of the stomp relay (IP address or hostname).
-		</td>
-	</tr>
-</table>
+```groovy
+beans = {
+	webSocketConfig my.package.name.MyClassName
+}
+```
 
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.port</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>int</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>61613</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The port of the stomp relay.
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.systemLogin</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>guest</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The login of the stomp relay for the shared system connection.
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.systemPasscode</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>guest</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The passcode of the stomp relay for the shared system connection.
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.clientLogin</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>guest</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The login of the stomp relay for the client connections.
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.messageBroker.stompRelay.clientPasscode</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>String</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>guest</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Only relevant if <code>stompRelay.enabled = true</code>.<br />
-			The passcode of the stomp relay for the client connections.
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.stompEndpoints</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Collection&lt;Collection&lt;String&gt;&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>[["/stomp"]]</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Expose a STOMP endpoint at the specified url path (or paths).<br />
-			For every inner Collection, a stomp endpoint is registered with those url path(s).
-			E.g. with the default value, one stomp endpoint is registered and listening at <code>/stomp</code>
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.clientInboundChannel.threadPoolSize</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Range&lt;Integer&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>4..10</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Core to max thread pool size for the TaskExecutor of the client inbound channel (client --&gt; server)
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.clientOutboundChannel.threadPoolSize</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>Range&lt;Integer&gt;</code></td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>4..10</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Core to max thread pool size for the TaskExecutor of the client outbound channel (server --&gt; client)
-		</td>
-	</tr>
-</table>
-
-<table>
-	<tr>
-		<td>Key</td>
-		<td><strong><code>grails.plugin.springwebsocket.useCustomConfig</code></strong></td>
-	</tr>
-	<tr>
-		<td>Type</td>
-		<td><code>boolean</code> (groovy truth)</td>
-	</tr>
-	<tr>
-		<td>Default</td>
-		<td><code>false</code></td>
-	</tr>
-	<tr>
-		<td>Description</td>
-		<td>
-			Set this to <code>true</code> if you want to take full control and responsibility for the spring websocket configuration.<br />
-			Then, all other config options above will have <strong>no</strong> effect.<br />
-			Neither the <code>WebSocketConfig</code> nor the <code>GrailsSimpAnnotationMethodMessageHandler</code> will be exposed to the application.
-		</td>
-	</tr>
-</table>
-
-If you need more sophisticated configuration options, currently the way to go would be using the <code>useCustomConfig</code> setting and heading over to the Spring docs/apis/samples covering the configuration of websockets/messaging.  
-You can of course use the plugin's `WebSocketConfig` for orientation. It uses `@EnableWebSocketMessageBroker` and implements `WebSocketMessageBrokerConfigurer`.
-But for bigger config adjustments, it is likely you end up extending Spring's `WebSocketMessageBrokerConfigurationSupport`. 
-
-Future versions of this plugin may cover more configuration options.
+From there, check the Spring docs/apis/samples for the available configuration options.

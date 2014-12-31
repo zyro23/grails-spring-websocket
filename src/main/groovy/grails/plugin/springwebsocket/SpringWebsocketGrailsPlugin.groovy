@@ -1,12 +1,9 @@
 package grails.plugin.springwebsocket
 
 import grails.core.GrailsApplication
-import grails.core.support.GrailsApplicationAware
 import grails.plugins.Plugin
 
-import org.springframework.boot.context.embedded.ServletRegistrationBean
 import org.springframework.context.ApplicationContext
-import org.springframework.web.servlet.handler.AbstractHandlerMapping
 
 class SpringWebsocketGrailsPlugin extends Plugin {
 
@@ -22,20 +19,9 @@ class SpringWebsocketGrailsPlugin extends Plugin {
 
 	@Override
 	Closure doWithSpring() {
-		def config = ConfigUtils.getSpringWebsocketConfig grailsApplication
-		if (config.useCustomConfig) return null
 		return { ->
-			webSocketConfig WebSocketConfig, config
-
-			grailsSimpAnnotationMethodMessageHandler(
-				GrailsSimpAnnotationMethodMessageHandler,
-				ref("clientInboundChannel"),
-				ref("clientOutboundChannel"),
-				ref("brokerMessagingTemplate")
-			) {
-				destinationPrefixes = config.messageBroker.applicationDestinationPrefixes
-			}
+			webSocketConfig DefaultWebSocketConfig
 		}
 	}
-
+	
 }
