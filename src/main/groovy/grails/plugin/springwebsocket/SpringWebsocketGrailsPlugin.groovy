@@ -19,8 +19,11 @@ class SpringWebsocketGrailsPlugin extends Plugin {
 
 	@Override
 	Closure doWithSpring() {
-		return { ->
-			webSocketConfig DefaultWebSocketConfig
+		return {
+			// TODO: remove condition when grails3 bean definition overriding is fixed
+			if (!springConfig.containsBean("webSocketConfig")) {
+				webSocketConfig DefaultWebSocketConfig
+			}
 		}
 	}
 	
