@@ -1,9 +1,6 @@
 package grails.plugin.springwebsocket
 
-import grails.core.GrailsApplication
 import grails.plugins.Plugin
-
-import org.springframework.context.ApplicationContext
 
 class SpringWebsocketGrailsPlugin extends Plugin {
 
