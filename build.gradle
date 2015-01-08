@@ -21,13 +21,9 @@ version "2.0.0.BUILD-SNAPSHOT"
 group "org.grails.plugins"
 
 apply plugin: "spring-boot"
-apply plugin: "asset-pipeline"
 apply plugin: "grails-plugin"
-apply plugin: "grails-gsp"
-apply plugin: "maven"
 apply plugin: "maven-publish"
 apply plugin: "eclipse"
-apply plugin: "idea"
 	
 repositories {
 	mavenLocal()
@@ -46,10 +42,6 @@ dependencies {
 	provided "javax.servlet:javax.servlet-api:3.1.0"
 	provided "org.grails:grails-dependencies"
 	provided "org.grails:grails-web-boot"
-	provided "org.springframework.boot:spring-boot-autoconfigure"
-	provided "org.springframework.boot:spring-boot-starter-actuator"
-	provided "org.springframework.boot:spring-boot-starter-logging"
-	provided "org.springframework.boot:spring-boot-starter-tomcat"
 	
 	compile "com.fasterxml.jackson.core:jackson-databind:2.4.4"
 	compile "org.springframework:spring-messaging:$springVersion"
@@ -61,8 +53,6 @@ dependencies {
 }
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
-
-idea.module.scopes.PROVIDED.plus += [configurations.provided]
 
 publishing {
 	publications {
@@ -77,8 +67,8 @@ publishing {
 	repositories {
 		maven {
 			credentials {
-				def user = System.getenv('GRAILS_CENTRAL_USERNAME') ?: project.properties.get('grailsPluginsUsername')
-				def pass = System.getenv("GRAILS_CENTRAL_PASSWORD") ?: project.properties.get('grailsPluginsPassword')
+				def user = System.getenv("GRAILS_CENTRAL_USERNAME") ?: project.properties.get("grailsPluginsUsername")
+				def pass = System.getenv("GRAILS_CENTRAL_PASSWORD") ?: project.properties.get("grailsPluginsPassword")
 				username user
 				password pass
 			}
@@ -89,15 +79,6 @@ publishing {
 			}
 		}
 	}
-}
-
-run {
-	minHeapSize = "768m"
-	maxHeapSize = "768m"
-	if (!org.gradle.api.JavaVersion.current().java8Compatible) {
-		jvmArgs "-XX:PermSize=96m", "-XX:MaxPermSize=256m"
-	}
-	jvmArgs "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:CICompilerCount=3"
 }
 
 task wrapper(type: Wrapper) {
