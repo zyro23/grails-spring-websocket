@@ -1,4 +1,4 @@
-package ${packageName}
+package ${model.packageName}
 
 import grails.plugin.springwebsocket.GrailsSimpAnnotationMethodMessageHandler
 import org.springframework.context.annotation.Bean
@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 
 @Configuration
 @EnableWebSocketMessageBroker
-class ${className} extends AbstractWebSocketMessageBrokerConfigurer {
+class ${model.className} extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Override
 	void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {

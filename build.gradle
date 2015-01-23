@@ -21,7 +21,7 @@ version "2.0.0.BUILD-SNAPSHOT"
 group "org.grails.plugins"
 
 apply plugin: "spring-boot"
-apply plugin: "grails-plugin"
+apply plugin: "org.grails.grails-plugin"
 apply plugin: "maven-publish"
 apply plugin: "eclipse"
 	
