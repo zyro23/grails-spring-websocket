@@ -16,7 +16,7 @@ class DefaultWebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 	@Override
 	void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
 		messageBrokerRegistry.enableSimpleBroker "/queue", "/topic"
-		messageBrokerRegistry.applicationDestinationPrefixes = "/app"
+		messageBrokerRegistry.setApplicationDestinationPrefixes "/app"
 	}
 
 	@Override

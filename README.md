@@ -54,7 +54,9 @@ class ExampleController {
 }
 ```
 
-Unless you want your handler method to be exposed as controller action, it is important that you define the annotated method as private or protected.
+Unless you want your handler method to be exposed as controller action, you should define the annotated method as protected or add an additional annotation `@grails.web.controllers.ControllerMethod`.
+
+Spring `@Controller` beans can be used as well.
 
 ### Client-side (sock.js / stomp.js)
 
@@ -151,3 +153,90 @@ beans = {
 ```
 
 From there, check the Spring docs/apis/samples for the available configuration options.
+
+## Security
+
+To secure websocket messaging, we can leverage the first-class websocket security support of Spring Security 4.0+.
+Check the Spring Security docs and the Spring Guides to get a jump-start into the topic.
+  
+There is a variety of options how to build your solution, including:
+* Securing message handler methods in a declarative fashion using annotations (e.g. `@PreAuthorize`)
+* Securing message handler methods by using an `@AuthenticationPrincipal`-annotated argument.
+* Filtering messages and subscriptions (e.g. with an `SecurityWebSocketMessageBrokerConfigurer`)
+
+I will only show a short example of securing message handler methods with security annotations. I hope you do not mind the lack of import statements in the following code snippets ;) 
+
+A working Spring Security setup is required. For the sake of brevity, here a super-minimalistic Spring Security dummy configuration:
+
+*/build.gradle*:
+
+```groovy
+dependencies {
+	compile "org.springframework.security:spring-security-config:4.0.0.RC1"
+	compile "org.springframework.security:spring-security-messaging:4.0.0.RC1"
+	compile "org.springframework.security:spring-security-web:4.0.0.RC1"
+}
+```
+
+*/src/main/groovy/example/WebSecurityConfig.groovy*:
+
+```groovy
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.antMatchers("/").permitAll()
+			.anyRequest().authenticated()
+		http.httpBasic()
+	}
+
+	@Autowired
+	void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication()
+			.withUser("user").password("password").roles("USER")
+	}
+	
+}
+```
+
+### Securing Message Handler Methods
+
+Securing message handler methods can be achieved with annotations in a declarative fashion.  
+
+The following example shows a Grails controller with a secured message handler method and an message exception handler method.
+
+*/grails-app/controllers/example/ExampleController.groovy*:
+
+```groovy
+class ExampleController {
+
+	def index() {
+		render view: "index"
+	}
+
+	@ControllerMethod
+	@MessageMapping("/hello")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@SendTo("/topic/hello")
+	String hello(String world) {
+		return "hello from secured controller, ${world}!"
+	}
+	
+	@ControllerMethod
+	@MessageExceptionHandler
+	@SendToUser(value = "/queue/errors", broadcast = false)
+	String handleException(Exception e) {
+		return "caught ${e.message}"
+	}
+	
+}
+```
+
+Besides the security handling itself, this snippet shows one important catch: if you want to secure Grails controller actions with `@PreAuthorize`, the secured method has to be public. However, as we still do not want the method to be exposed as a controller action but only as message handler, in this case the use of `@ControllerMethod` is required.  
+
+Note that you can still use Spring `@Controller` beans as message handlers which would obviously not require those additional `@ControllerMethod` annotations.
+

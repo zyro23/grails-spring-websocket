@@ -1,8 +1,9 @@
 package grails.plugin.springwebsocket
 
+import grails.artefact.Controller
+import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
 
-import grails.core.GrailsApplication
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.messaging.MessageChannel
@@ -31,7 +32,7 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 	
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
-		return grailsApplication.isArtefactOfType("Controller", beanType)
+		return Controller.isAssignableFrom(beanType)
 	}
 	
 }

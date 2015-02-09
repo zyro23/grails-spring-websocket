@@ -9,21 +9,25 @@ buildscript {
 	}
 	dependencies {
 		classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.1.0"
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.1.1"
 	}
 }
 
 plugins {
 	id "io.spring.dependency-management" version "0.3.1.RELEASE"
+	id "com.jfrog.bintray" version "1.1"
 }
 
 version "2.0.0.BUILD-SNAPSHOT"
 group "org.grails.plugins"
 
 apply plugin: "spring-boot"
+apply plugin: "asset-pipeline"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "maven-publish"
 apply plugin: "eclipse"
+apply from: "https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle"
+apply from: "https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle"
 	
 repositories {
 	mavenLocal()
@@ -44,8 +48,12 @@ dependencies {
 	provided "org.grails:grails-web-boot"
 	
 	compile "com.fasterxml.jackson.core:jackson-databind:2.4.4"
-	compile "org.springframework:spring-messaging:$springVersion"
-	compile "org.springframework:spring-websocket:$springVersion"
+	compile("org.springframework:spring-messaging:$springVersion") {
+		transitive = false
+	}
+	compile("org.springframework:spring-websocket:$springVersion") {
+		transitive = false
+	}
 	
 	testCompile "org.grails:grails-plugin-testing"
 	
@@ -54,33 +62,8 @@ dependencies {
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
 
-publishing {
-	publications {
-		maven(MavenPublication) {
-			artifactId "spring-websocket"
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-			artifact source: "${sourceSets.main.output.classesDir}/META-INF/grails-plugin.xml", classifier: "plugin", extension: "xml"
-		}
-	}
-	repositories {
-		maven {
-			credentials {
-				def user = System.getenv("GRAILS_CENTRAL_USERNAME") ?: project.properties.get("grailsPluginsUsername")
-				def pass = System.getenv("GRAILS_CENTRAL_PASSWORD") ?: project.properties.get("grailsPluginsPassword")
-				username user
-				password pass
-			}
-			if (version.endsWith("-SNAPSHOT")) {
-				url "https://repo.grails.org/grails/plugins3-snapshots-local"
-			} else {
-				url "https://repo.grails.org/grails/plugins3-releases-local"
-			}
-		}
-	}
-}
+publishing.publications.maven.artifactId "spring-websocket"
 
 task wrapper(type: Wrapper) {
-	gradleVersion = "2.3-20141120230022+0000"
+	gradleVersion = "2.3-rc-3"
 }
