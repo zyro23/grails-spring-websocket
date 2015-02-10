@@ -107,9 +107,13 @@ You can also inject and use the <code>brokerMessagingTemplate</code> bean to sen
 */grails-app/services/example/ExampleService.groovy*:
 
 ```groovy
+package example
+
+import org.springframework.messaging.simp.SimpMessagingTemplate
+
 class ExampleService {
 	
-	def brokerMessagingTemplate
+	SimpMessagingTemplate brokerMessagingTemplate
 	
 	void hello() {
 		brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
@@ -154,6 +158,45 @@ beans = {
 
 From there, check the Spring docs/apis/samples for the available configuration options.
 
+## User Destinations
+
+To send messages to specific users, you can (among other ways) annotate message handler methods with `@SendToUser` and/or use the `SimpMessagingTemplate.convertAndSendToUser(...)` methods.
+
+*/grails-app/controllers/example/ExampleController.groovy*:
+
+```groovy
+class ExampleController {
+	
+	SimpMessagingTemplate brokerMessagingTemplate
+	
+	@MessageMapping("/hello")
+	@SendToUser("/queue/hello")
+	protected String hello(String world) {
+		return "hello from controller, ${world}!"
+	}
+	
+}
+```
+
+To receive messages for the above `/queue/hello` user destination, the js client would have to subscribe to `/user/queue/hello`.  
+If a user is not logged in, `@SendToUser` will still work and only the user who sent the ingoing message will receive the outgoing one returned by the method.
+
+*/grails-app/services/example/ExampleService.groovy*:
+
+```groovy
+class ExampleService {
+	
+	SimpMessagingTemplate brokerMessagingTemplate
+	
+	void hello() {
+		brokerMessagingTemplate.convertAndSendToUser("myTargetUsername", "/queue/hello", "hello, target user!")
+	}
+	
+}
+```
+
+Again, to receive messages for the above `/queue/hello` user destination, the js client would have to subscribe to `/user/queue/hello`.
+
 ## Security
 
 To secure websocket messaging, we can leverage the first-class websocket security support of Spring Security 4.0+.
@@ -164,7 +207,7 @@ There is a variety of options how to build your solution, including:
 * Securing message handler methods by using an `@AuthenticationPrincipal`-annotated argument.
 * Filtering messages and subscriptions (e.g. with an `SecurityWebSocketMessageBrokerConfigurer`)
 
-I will only show a short example of securing message handler methods with security annotations. I hope you do not mind the lack of import statements in the following code snippets ;) 
+I will only show a short example of securing message handler methods with security annotations and filtering inbound messages. I hope you do not mind the lack of import statements in the following code snippets ;) 
 
 A working Spring Security setup is required. For the sake of brevity, here a super-minimalistic Spring Security dummy configuration:
 
@@ -214,10 +257,6 @@ The following example shows a Grails controller with a secured message handler m
 ```groovy
 class ExampleController {
 
-	def index() {
-		render view: "index"
-	}
-
 	@ControllerMethod
 	@MessageMapping("/hello")
 	@PreAuthorize("hasRole('ROLE_USER')")
@@ -240,3 +279,24 @@ Besides the security handling itself, this snippet shows one important catch: if
 
 Note that you can still use Spring `@Controller` beans as message handlers which would obviously not require those additional `@ControllerMethod` annotations.
 
+### Filtering messages
+
+The following example shows how you can filter inbound messages by type and/or by destination pattern.
+
+*/src/main/groovy/example/WebSecurityConfig.groovy*:
+
+```groovy
+@Configuration
+class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+	
+	@Override
+	void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+		messages
+			.antMatchers(SimpMessageType.MESSAGE, "/queue/**", "/topic/**").denyAll()
+			.antMatchers(SimpMessageType.SUBSCRIBE, "/queue/**/*-user*", "/topic/**/*-user*").denyAll()
+			.antMatchers("/user/queue/errors").permitAll()
+			.typeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).hasRole("USER")
+	}
+	
+}
+```
