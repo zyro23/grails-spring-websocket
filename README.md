@@ -351,9 +351,6 @@ class BootStrap implements Events {
 	}
 
 }
-
-	
-}
 ```
 
 For further information check the Grails and/or Reactor docs. 
