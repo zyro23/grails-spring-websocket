@@ -300,3 +300,60 @@ class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConf
 	
 }
 ```
+
+## Event Handling
+
+Starting with Grails 3, grails-plugin-events is a core plugin allowing to use the Reactor framework for event handling.
+
+While there is no special event integration regarding websocket messaging (because it is not really necessary anymore), a service that handles application events can look like the follwing snippet. I am _not_ talking about Spring `ApplicationEvent`s here, but Reactor `Event`s.
+
+*/grails-app/services/example/ExampleService.groovy*:
+
+```groovy
+@Consumer
+class ExampleService {
+	
+	SimpMessagingTemplate brokerMessagingTemplate
+	
+	@Selector("myEvent")
+	void hello(Event<String> event) {
+		brokerMessagingTemplate.convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+	}
+	
+}
+```
+
+Events can be fired/sent from all application artefacts/beans that implement the trait `Events`. Grails service beans do so by convention. Those beans also allow dynamic registration of event listeners. E.g.:
+
+*/grails-app/services/example/ExampleService.groovy*:
+
+```groovy
+class ExampleService {
+	
+	void fireMyEvent() {
+		notify "myEvent", "hello from myEvent!"
+	}
+	
+}
+```
+
+*/grails-app/init/BootStrap.groovy*:
+
+```groovy
+class BootStrap implements Events {
+
+	SimpMessagingTemplate brokerMessagingTemplate
+
+	def init = {
+		on("myEvent") { Event<String> event ->
+			brokerMessagingTemplate.convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+		}
+	}
+
+}
+
+	
+}
+```
+
+For further information check the Grails and/or Reactor docs. 
