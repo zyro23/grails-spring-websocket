@@ -21,7 +21,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile "org.grails.plugins:spring-websocket:2.0.0.BUILD-SNAPSHOT"
+	compile "org.grails.plugins:grails-spring-websocket:2.0.0.BUILD-SNAPSHOT"
 	
 ## Usage
 
@@ -214,10 +214,14 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 */build.gradle*:
 
 ```groovy
+repositories {
+	maven { url "http://repo.spring.io/snapshot" }
+}
+
 dependencies {
-	compile "org.springframework.security:spring-security-config:4.0.0.RC1"
-	compile "org.springframework.security:spring-security-messaging:4.0.0.RC1"
-	compile "org.springframework.security:spring-security-web:4.0.0.RC1"
+	compile "org.springframework.security:spring-security-config:4.0.0.CI-SNAPSHOT"
+	compile "org.springframework.security:spring-security-messaging:4.0.0.CI-SNAPSHOT"
+	compile "org.springframework.security:spring-security-web:4.0.0.CI-SNAPSHOT"
 }
 ```
 
@@ -231,10 +235,8 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-			.antMatchers("/").permitAll()
-			.anyRequest().authenticated()
 		http.httpBasic()
+		http.authorizeRequests().anyRequest().authenticated()
 	}
 
 	@Autowired
@@ -245,6 +247,28 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 }
 ```
+
+Spring security will by default enable CSRF protection for websocket messages.  
+To include the required token in the stomp headers, your js code could look like this:
+
+*/grails-app/views/example/index.gsp*:
+
+```javascript
+$(function() { 
+	var url = "${createLink(uri: '/stomp')}";
+	var csrfHeaderName = "${request._csrf.headerName}";
+	var csrfToken = "${request._csrf.token}";
+	var socket = new SockJS(url);
+	var client = Stomp.over(socket);
+	var headers = {};
+	headers[csrfHeaderName] = csrfToken;
+	client.connect(headers, function() {
+		// subscriptions etc. [...]
+	});
+});
+```
+
+There are still embedded GSP GString expressions present, which means that snippet will only work in a GSP as-is. If you plan on extracting the js properly into an own js file (or similar), you will have to pass those values along.
 
 ### Securing Message Handler Methods
 
@@ -292,10 +316,12 @@ class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConf
 	@Override
 	void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
 		messages
-			.antMatchers(SimpMessageType.MESSAGE, "/queue/**", "/topic/**").denyAll()
-			.antMatchers(SimpMessageType.SUBSCRIBE, "/queue/**/*-user*", "/topic/**/*-user*").denyAll()
-			.antMatchers("/user/queue/errors").permitAll()
-			.typeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).hasRole("USER")
+			.nullDestMatcher().authenticated()
+			.simpSubscribeDestMatchers("/user/queue/errors").permitAll()
+			.simpDestMatchers("/app/**").hasRole("USER")
+			.simpSubscribeDestMatchers("/user/**", "/topic/**").hasRole("USER")
+			.simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
+			.anyMessage().denyAll()
 	}
 	
 }
