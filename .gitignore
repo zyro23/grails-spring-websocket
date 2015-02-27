@@ -1,3 +1,4 @@
+/.gradle
 /.settings
 /target
 /target-eclipse
@@ -8,5 +9,4 @@
 /grails-spring-websocket-*
 /web-app/WEB-INF/tld
 /bin
-/.gradle
 /build
