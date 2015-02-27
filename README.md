@@ -23,6 +23,8 @@ To install the plugin into a Grails application add the following line to your `
 
 	compile "org.grails.plugins:grails-spring-websocket:2.0.0.M1"
 	
+Currently, the plugin is only published to bintray, so make sure you got the `jcenter()` repository added in your `build.gradle` repositories section.
+	
 ## Usage
 
 The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in Grails controllers, too.  
