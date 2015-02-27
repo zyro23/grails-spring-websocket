@@ -74,8 +74,8 @@ bintray {
 	pkg {
 		repo = "maven"
 		name = project.name
+		attributes = ["grails-plugin": project.name]
 		version {
-			attributes = ["grails-plugin": project.name]
 			name = project.version
 		}
 	}
