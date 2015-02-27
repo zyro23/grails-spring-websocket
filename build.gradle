@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		grailsVersion = "3.0.0.BUILD-SNAPSHOT"
+		grailsVersion = "3.0.0.M2"
 		springVersion = "4.1.5.RELEASE"
 	}
 	repositories {
@@ -18,7 +18,7 @@ plugins {
 	id "com.jfrog.bintray" version "1.1"
 }
 
-version "2.0.0.BUILD-SNAPSHOT"
+version "2.0.0.M1"
 group "org.grails.plugins"
 
 apply plugin: "spring-boot"
@@ -27,8 +27,10 @@ apply plugin: "org.grails.grails-plugin"
 apply plugin: "maven-publish"
 apply plugin: "eclipse"
 apply from: "https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle"
-apply from: "https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/bintrayPublishing.gradle"
-	
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -46,6 +48,10 @@ dependencies {
 	provided "javax.servlet:javax.servlet-api:3.1.0"
 	provided "org.grails:grails-dependencies"
 	provided "org.grails:grails-web-boot"
+	provided "org.springframework.boot:spring-boot-starter-logging"
+	provided "org.springframework.boot:spring-boot-starter-actuator"
+	provided "org.springframework.boot:spring-boot-autoconfigure"
+	provided "org.springframework.boot:spring-boot-starter-tomcat"
 	
 	compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
 	compile("org.springframework:spring-messaging:$springVersion") {
@@ -58,6 +64,21 @@ dependencies {
 	testCompile "org.grails:grails-plugin-testing"
 	
 	console "org.grails:grails-console"
+}
+
+bintray {
+	user = project.hasProperty("bintrayUser") ? project.bintrayUser : ""
+	key = project.hasProperty("bintrayKey") ? project.bintrayKey : ""
+	publications = ["maven"]
+	publish = true
+	pkg {
+		repo = "maven"
+		name = project.name
+		version {
+			attributes = ["grails-plugin": project.name]
+			name = project.version
+		}
+	}
 }
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
