@@ -214,14 +214,10 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 */build.gradle*:
 
 ```groovy
-repositories {
-	maven { url "http://repo.spring.io/snapshot" }
-}
-
 dependencies {
-	compile "org.springframework.security:spring-security-config:4.0.0.CI-SNAPSHOT"
-	compile "org.springframework.security:spring-security-messaging:4.0.0.CI-SNAPSHOT"
-	compile "org.springframework.security:spring-security-web:4.0.0.CI-SNAPSHOT"
+	compile "org.springframework.security:spring-security-config:4.0.0.RC2"
+	compile "org.springframework.security:spring-security-messaging:4.0.0.RC2"
+	compile "org.springframework.security:spring-security-web:4.0.0.RC2"
 }
 ```
 
