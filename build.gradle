@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		grailsVersion = "3.0.0.M2"
+		grailsVersion = "3.0.0.RC1"
 		springVersion = "4.1.5.RELEASE"
 	}
 	repositories {
@@ -14,18 +14,18 @@ buildscript {
 }
 
 plugins {
-	id "io.spring.dependency-management" version "0.3.1.RELEASE"
+	id "io.spring.dependency-management" version "0.4.0.RELEASE"
 	id "com.jfrog.bintray" version "1.1"
 }
 
-version "2.0.0.M1"
+version "2.0.0.M2"
 group "org.grails.plugins"
 
+apply plugin: "maven-publish"
+apply plugin: "eclipse"
 apply plugin: "spring-boot"
 apply plugin: "asset-pipeline"
 apply plugin: "org.grails.grails-plugin"
-apply plugin: "maven-publish"
-apply plugin: "eclipse"
 apply from: "https://raw.githubusercontent.com/grails/grails-profile-repository/master/profiles/plugin/templates/grailsCentralPublishing.gradle"
 
 sourceCompatibility = 1.7
@@ -81,7 +81,6 @@ bintray {
 	}
 }
 
-eclipse.classpath.plusConfigurations += [configurations.provided]
 
 task wrapper(type: Wrapper) {
 	gradleVersion = "2.3"
