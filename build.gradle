@@ -1,6 +1,7 @@
 buildscript {
 	ext {
-		grailsVersion = "3.0.0.RC2"
+		grailsVersion = "3.0.0.RC3"
+		springVersion = "4.1.6.RELEASE"
 	}
 	repositories {
 		mavenLocal()
@@ -16,7 +17,7 @@ plugins {
 	id "com.jfrog.bintray" version "1.1"
 }
 
-version "2.0.0.M3"
+version "2.0.0.RC1"
 group "org.grails.plugins"
 
 apply plugin: "maven-publish"
@@ -37,7 +38,6 @@ dependencyManagement {
 	imports {
 		mavenBom "org.grails:grails-bom:$grailsVersion"
 	}
-	applyMavenExclusions false
 }
 
 dependencies {
@@ -50,16 +50,33 @@ dependencies {
 	provided "org.springframework.boot:spring-boot-starter-tomcat"
 	
 	compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
-	compile("org.springframework:spring-messaging") {
-		transitive = false
-	}
-	compile("org.springframework:spring-websocket") {
-		transitive = false
-	}
+	compile "org.springframework:spring-messaging:${springVersion}"
+	compile "org.springframework:spring-websocket:${springVersion}"
 	
 	testCompile "org.grails:grails-plugin-testing"
 	
 	console "org.grails:grails-console"
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			pom.withXml {
+				def pomNode = asNode()
+				pomNode.dependencyManagement.replaceNode {}
+				pomNode.dependencies.dependency.findAll {
+					it.version.text().isEmpty()
+				}.each {
+					it.replaceNode {}
+				}
+			}
+			artifactId project.name
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+			artifact source: "${sourceSets.main.output.classesDir}/META-INF/grails-plugin.xml", classifier: "plugin", extension: "xml"
+		}
+	}
 }
 
 bintray {
@@ -70,13 +87,10 @@ bintray {
 	pkg {
 		repo = "maven"
 		name = project.name
-		version {
-			attributes = ["grails-plugin": project.name]
-			name = project.version
-		}
 	}
 }
 
+task install(dependsOn: project.tasks.withType(PublishToMavenLocal))
 
 task wrapper(type: Wrapper) {
 	gradleVersion = "2.3"

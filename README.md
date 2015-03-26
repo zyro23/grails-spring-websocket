@@ -21,9 +21,10 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile "org.grails.plugins:grails-spring-websocket:2.0.0.M3"
+	compile "org.grails.plugins:grails-spring-websocket:2.0.0.RC1"
 	
-Currently, the plugin is only published to bintray, so make sure you got the `jcenter()` repository added in your `build.gradle` repositories section.
+The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.  
+If you face difficulties resolving the dependency, add the `jcenter()` repository to your `build.gradle` repositories section.
 	
 ## Usage
 
@@ -217,9 +218,9 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 
 ```groovy
 dependencies {
-	compile "org.springframework.security:spring-security-config:4.0.0.RC2"
-	compile "org.springframework.security:spring-security-messaging:4.0.0.RC2"
-	compile "org.springframework.security:spring-security-web:4.0.0.RC2"
+	compile "org.springframework.security:spring-security-config:4.0.0.RELEASE"
+	compile "org.springframework.security:spring-security-messaging:4.0.0.RELEASE"
+	compile "org.springframework.security:spring-security-web:4.0.0.RELEASE"
 }
 ```
 
