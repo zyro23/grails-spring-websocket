@@ -99,7 +99,7 @@ Unless you want your handler method to be exposed as controller action, it is im
 			
 				client.connect({}, function() {
 					client.subscribe("/topic/hello", function(message) {
-						$("#helloDiv").append(JSON.parse(message.body));
+						$("#helloDiv").append(message.body);
 					});
 				});
 			
