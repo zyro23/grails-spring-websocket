@@ -1,92 +1,70 @@
 buildscript {
 	ext {
-		grailsVersion = "3.0.10"
-		springVersion = "4.1.8.RELEASE"
+		grailsVersion = "3.1.0.M3"
+		springVersion = "4.2.3.RELEASE"
 	}
 	repositories {
 		mavenLocal()
 		maven { url "http://repo.grails.org/grails/core" }
 	}
 	dependencies {
-		classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+		classpath "org.grails:grails-gradle-plugin:${grailsVersion}"
 	}
 }
 
-plugins {
-	id "io.spring.dependency-management" version "0.5.4.RELEASE"
-	id "com.jfrog.bintray" version "1.5"
-}
-
-version "2.2.0"
+version "2.3.0.M1"
 group "org.grails.plugins"
 
-apply plugin: "maven-publish"
 apply plugin: "eclipse"
-apply plugin: "spring-boot"
 apply plugin: "org.grails.grails-plugin"
+apply plugin: "org.grails.grails-plugin-publish"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
 	mavenLocal()
-	mavenCentral()
 	maven { url "http://repo.grails.org/grails/core" }
 }
 
 dependencyManagement {
 	imports {
-		mavenBom "org.grails:grails-bom:$grailsVersion"
+		mavenBom "org.grails:grails-bom:${grailsVersion}"
 	}
 	applyMavenExclusions false
 }
 
 dependencies {
-	provided "javax.servlet:javax.servlet-api:3.1.0"
-	provided "org.grails:grails-dependencies"
-	provided "org.grails:grails-web-boot"
-	provided "org.springframework.boot:spring-boot-starter-logging"
-	provided "org.springframework.boot:spring-boot-starter-actuator"
-	provided "org.springframework.boot:spring-boot-autoconfigure"
-	provided "org.springframework.boot:spring-boot-starter-tomcat"
+	provided "org.grails:grails-plugin-services"
+	provided "org.grails:grails-plugin-domain-class"
 	
 	compile "com.fasterxml.jackson.core:jackson-databind:2.6.3"
+	compile "org.grails:grails-core"
+	compile "org.grails:grails-dependencies"
+	compile "org.grails:grails-web-boot"
+	compile "org.grails.plugins:cache"
+	compile "org.grails.plugins:scaffolding"
 	compile "org.springframework:spring-messaging:${springVersion}"
 	compile "org.springframework:spring-websocket:${springVersion}"
+	compile "org.springframework.boot:spring-boot-autoconfigure"
+	compile "org.springframework.boot:spring-boot-starter-logging"
+	compile "org.springframework.boot:spring-boot-starter-actuator"
+	compile "org.springframework.boot:spring-boot-starter-tomcat"
 	
 	testCompile "org.grails:grails-plugin-testing"
+	
+	profile "org.grails.profiles:web-plugin:${grailsVersion}"
 	
 	console "org.grails:grails-console"
 }
 
-publishing {
-	publications {
-		maven(MavenPublication) {
-			pom.withXml {
-				def pomNode = asNode()
-				pomNode.dependencyManagement.replaceNode {}
-				pomNode.dependencies.dependency.findAll {
-					!it.version.text()
-				}*.replaceNode {}
-			}
-			artifactId project.name
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-			artifact source: "${sourceSets.main.output.classesDir}/META-INF/grails-plugin.xml", classifier: "plugin", extension: "xml"
-		}
-	}
-}
-
-bintray {
-	user = project.hasProperty("bintrayUser") ? project.bintrayUser : ""
-	key = project.hasProperty("bintrayKey") ? project.bintrayKey : ""
-	publications = ["maven"]
-	publish = true
-	pkg {
-		repo = "maven"
-		name = project.name
-	}
+grailsPublish {
+	user = project.properties.bintrayUser ?: "."
+	key = project.properties.bintrayKey ?: "."
+	githubSlug = "zyro23/grails-spring-websocket"
+	repo = "maven"
+	license = "Apache-2.0"
+	developers = [zyro: "zyro"]
 }
 
 eclipse {

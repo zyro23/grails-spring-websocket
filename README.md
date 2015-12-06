@@ -23,6 +23,10 @@ Grails version requirements:
 		<td>2.2.0</td>
 		<td>3.0.10+</td>
 	</tr>
+	<tr>
+		<td>2.3.0.M1</td>
+		<td>3.1.0.M3+</td>
+	</tr>
 </table>
 
 ## Installation
