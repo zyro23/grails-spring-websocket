@@ -1,7 +1,7 @@
 buildscript {
 	ext {
-		grailsVersion = "3.0.3"
-		springVersion = "4.1.7.RELEASE"
+		grailsVersion = "3.0.10"
+		springVersion = "4.1.8.RELEASE"
 	}
 	repositories {
 		mavenLocal()
@@ -13,11 +13,11 @@ buildscript {
 }
 
 plugins {
-	id "io.spring.dependency-management" version "0.5.2.RELEASE"
-	id "com.jfrog.bintray" version "1.2"
+	id "io.spring.dependency-management" version "0.5.4.RELEASE"
+	id "com.jfrog.bintray" version "1.5"
 }
 
-version "2.1.0"
+version "2.2.0"
 group "org.grails.plugins"
 
 apply plugin: "maven-publish"
@@ -50,7 +50,7 @@ dependencies {
 	provided "org.springframework.boot:spring-boot-autoconfigure"
 	provided "org.springframework.boot:spring-boot-starter-tomcat"
 	
-	compile "com.fasterxml.jackson.core:jackson-databind:2.5.4"
+	compile "com.fasterxml.jackson.core:jackson-databind:2.6.3"
 	compile "org.springframework:spring-messaging:${springVersion}"
 	compile "org.springframework:spring-websocket:${springVersion}"
 	
@@ -96,4 +96,4 @@ eclipse {
 	}
 }
 
-wrapper.gradleVersion = "2.5"
+wrapper.gradleVersion = "2.9"
