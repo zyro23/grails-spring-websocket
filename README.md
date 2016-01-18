@@ -24,8 +24,8 @@ Grails version requirements:
 		<td>3.0.10+</td>
 	</tr>
 	<tr>
-		<td>2.3.0.M1</td>
-		<td>3.1.0.M3+</td>
+		<td>2.3.0.M2</td>
+		<td>3.1.0.RC1+</td>
 	</tr>
 </table>
 
