@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		grailsVersion = "3.1.0.RC1"
+		grailsVersion = "3.1.0"
 		springVersion = "4.2.4.RELEASE"
 	}
 	repositories {
@@ -12,7 +12,7 @@ buildscript {
 	}
 }
 
-version "2.3.0.M2"
+version "2.3.0"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
@@ -21,7 +21,6 @@ apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
 
 sourceCompatibility = 1.7
-targetCompatibility = sourceCompatibility
 
 repositories {
 	mavenLocal()

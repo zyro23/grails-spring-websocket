@@ -4,7 +4,7 @@ import grails.plugins.Plugin
 
 class SpringWebsocketGrailsPlugin extends Plugin {
 
-	def grailsVersion = "3.0.0 > *"
+	def grailsVersion = "3.1.0 > *"
 	def title = "Spring Websocket Plugin"
 	def author = "zyro"
 	def authorEmail = ""
