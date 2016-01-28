@@ -10,14 +10,6 @@ Grails version requirements:
 	<tr>
 		<th>grails-spring-websocket</th>
 		<th>Grails</th>
-	<tr>
-	<tr>
-		<td>2.0.x</td>
-		<td>3.0.0 - 3.0.2</td>
-	</tr>
-	<tr>
-		<td>2.1.x</td>
-		<td>3.0.3 - 3.0.9</td>
 	</tr>
 	<tr>
 		<td>2.2.0</td>
