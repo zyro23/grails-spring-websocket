@@ -164,6 +164,18 @@ beans = {
 
 From there, check the Spring docs/apis/samples for the available configuration options.
 
+### Full-Featured Broker
+
+To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
+Additionally, add two dependencies for TCP connection management.
+
+	compile "io.projectreactor:reactor-net"
+	compile "io.netty:netty-all:4.0.33.Final"
+
+Both are optional dependencies and as such have to be added explicitly.
+The version can be omitted for `reactor-net` because it is included in the Spring Boot BOM.
+A sensible default for the version of `netty-all` is the one that your current version of `spring-messaging` declares as dependency.
+
 ## User Destinations
 
 To send messages to specific users, you can (among other ways) annotate message handler methods with `@SendToUser` and/or use the `SimpMessagingTemplate.convertAndSendToUser(...)` methods.

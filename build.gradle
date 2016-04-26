@@ -35,10 +35,10 @@ dependencyManagement {
 }
 
 dependencies {
-	provided "javax.servlet:javax.servlet-api:3.1.0"
-	provided "org.grails:grails-plugin-async"
+	compileOnly "javax.servlet:javax.servlet-api"
+	compileOnly "org.grails:grails-plugin-async"
 
-	compile "com.fasterxml.jackson.core:jackson-databind:2.6.3"
+	compile "com.fasterxml.jackson.core:jackson-databind:2.6.4"
 	compile "org.springframework:spring-messaging:${springVersion}"
 	compile "org.springframework:spring-websocket:${springVersion}"
 
@@ -54,11 +54,4 @@ grailsPublish {
 	developers = [zyro: "zyro"]
 }
 
-eclipse {
-	project {
-		buildCommand "org.springframework.ide.eclipse.core.springbuilder"
-		natures "org.springframework.ide.eclipse.core.springnature"
-	}
-}
-
-wrapper.gradleVersion = "2.10"
+wrapper.gradleVersion = "2.13"

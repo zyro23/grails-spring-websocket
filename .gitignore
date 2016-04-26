@@ -10,3 +10,7 @@
 /web-app/WEB-INF/tld
 /bin
 /build
+/grails-spring-websocket.iws
+/grails-spring-websocket.ipr
+/.idea
+/out
