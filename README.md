@@ -38,7 +38,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `BuildConfig.groovy` plugins section:
 
-	compile ":spring-websocket:1.3.0"
+	compile ":spring-websocket:1.3.1"
 	
 If you are using the tomcat8 plugin (8.0.1.1+), thats it.  
 If you are using the tomcat plugin (7.0.52+), you should add the following `BuildConfig.groovy` settings to ensure proper functionality:
@@ -410,8 +410,31 @@ The following configuration options are available (e.g. by adding some or all of
 		<td>Description</td>
 		<td>
 			Expose a STOMP endpoint at the specified url path (or paths).<br />
-			For every inner Collection, a stomp endpoint is registered with those url path(s).
+			For every inner Collection, a stomp endpoint is registered with those url path(s).<br />
 			E.g. with the default value, one stomp endpoint is registered and listening at <code>/stomp</code>
+		</td>
+	</tr>
+</table>
+
+<table>
+	<tr>
+		<td>Key</td>
+		<td><strong><code>grails.plugin.springwebsocket.allowedOrigins</code></strong></td>
+	</tr>
+	<tr>
+		<td>Type</td>
+		<td><code>Collection&lt;String&gt;</code></td>
+	</tr>
+	<tr>
+		<td>Default</td>
+		<td><code>[]</code></td>
+	</tr>
+	<tr>
+		<td>Description</td>
+		<td>
+			Allowed origins for all stomp endpoints. By default, a same origin policy is enforced.<br />
+			Each provided allowed origin must have a scheme, and optionally a port.<br />
+			An allowed origin string may also be <code>*</code> in which case all origins are allowed.
 		</td>
 	</tr>
 </table>

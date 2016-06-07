@@ -20,6 +20,7 @@ grails {
 				}
 			}
 			stompEndpoints = [["/stomp"]]
+			allowedOrigins = []
 		}
 	}
 }

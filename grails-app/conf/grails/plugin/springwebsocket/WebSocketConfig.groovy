@@ -62,8 +62,9 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
 	@Override
 	void registerStompEndpoints(StompEndpointRegistry ser) {
+		String[] allowedOrigins = config.allowedOrigins
 		for (String[] endpoint in config.stompEndpoints) {
-			ser.addEndpoint(endpoint).withSockJS()
+			ser.addEndpoint(endpoint).setAllowedOrigins(allowedOrigins).withSockJS()
 		}
 	}
 
