@@ -1,7 +1,7 @@
 buildscript {
 	ext {
-		grailsVersion = "3.1.0"
-		springVersion = "4.2.4.RELEASE"
+		grailsVersion = "3.2.7"
+		springVersion = "4.3.7.RELEASE"
 	}
 	repositories {
 		mavenLocal()
@@ -12,7 +12,7 @@ buildscript {
 	}
 }
 
-version "2.3.0"
+version "3.0.0"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
