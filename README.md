@@ -25,19 +25,21 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile "org.grails.plugins:grails-spring-websocket:2.3.0"
+	compile "org.grails.plugins:grails-spring-websocket:3.0.0"
 	
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.  
 	
 ## Usage
 
-The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in Grails controllers, too.  
+The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in a new artefact called a Grails Websocket.
 
 I think basic usage is explained best by example code.  
 But: the code below is just some very minimal it-works proof.  
 Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication.
 
-### Controller (annotated handler method)
+Firstly create a new `GrailsWebsocket` using the generator script `grails create-web-socket MySampleWebsocket`. This will create websockets in `grails-app/websockets`
+
+### Websocket (annotated handler method)
 
 */grails-app/controllers/example/ExampleController.groovy*:
 
@@ -47,7 +49,7 @@ package example
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 
-class ExampleController {
+class MySampleWebsocket {
 	
 	def index() {}
 	
@@ -60,9 +62,7 @@ class ExampleController {
 }
 ```
 
-Unless you want your handler method to be exposed as controller action, you should define the annotated method as protected or add an additional annotation `@grails.web.controllers.ControllerMethod`.
 
-Spring `@Controller` beans can be used as well.
 
 ### Client-side (sock.js / stomp.js)
 
@@ -180,10 +180,10 @@ A sensible default for the version of `netty-all` is the one that your current v
 
 To send messages to specific users, you can (among other ways) annotate message handler methods with `@SendToUser` and/or use the `SimpMessagingTemplate.convertAndSendToUser(...)` methods.
 
-*/grails-app/controllers/example/ExampleController.groovy*:
+*/grails-app/websockets/example/ExampleWebsocket.groovy*:
 
 ```groovy
-class ExampleController {
+class ExampleWebsocket {
 	
 	SimpMessagingTemplate brokerMessagingTemplate
 	
@@ -288,12 +288,12 @@ There are still embedded GSP GString expressions present, which means that snipp
 
 Securing message handler methods can be achieved with annotations in a declarative fashion.  
 
-The following example shows a Grails controller with a secured message handler method and an message exception handler method.
+The following example shows a Grails Websocjet with a secured message handler method and an message exception handler method.
 
-*/grails-app/controllers/example/ExampleController.groovy*:
+*/grails-app/websockets/example/ExampleWebsocket.groovy*:
 
 ```groovy
-class ExampleController {
+class ExampleWebsocket {
 
 	@ControllerMethod
 	@MessageMapping("/hello")
