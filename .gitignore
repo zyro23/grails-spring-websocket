@@ -14,3 +14,6 @@
 /grails-spring-websocket.ipr
 /.idea
 /out
+/*.iml
+/*.ipr
+/*.iws

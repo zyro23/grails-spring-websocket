@@ -8,17 +8,19 @@ buildscript {
 		maven { url "http://repo.grails.org/grails/core" }
 	}
 	dependencies {
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.10"
 		classpath "org.grails:grails-gradle-plugin:${grailsVersion}"
 	}
 }
 
-version "3.0.0"
+version "2.4.0.BUILD-SNAPSHOT"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
 apply plugin: "org.grails.grails-plugin"
 apply plugin: "org.grails.grails-plugin-publish"
+apply plugin: "com.bertramlabs.asset-pipeline"
 
 sourceCompatibility = 1.7
 
@@ -38,12 +40,14 @@ dependencies {
 	compileOnly "javax.servlet:javax.servlet-api"
 	compileOnly "org.grails:grails-plugin-async"
 
-	compile "com.fasterxml.jackson.core:jackson-databind:2.6.4"
+	compile "com.fasterxml.jackson.core:jackson-databind"
 	compile "org.springframework:spring-messaging:${springVersion}"
 	compile "org.springframework:spring-websocket:${springVersion}"
 
 	profile "org.grails.profiles:plugin:${grailsVersion}"
 }
+
+assets.packagePlugin = true
 
 grailsPublish {
 	user = project.properties.bintrayUser ?: "."
@@ -54,4 +58,4 @@ grailsPublish {
 	developers = [zyro: "zyro"]
 }
 
-wrapper.gradleVersion = "2.13"
+wrapper.gradleVersion = "3.5.1"
