@@ -29,7 +29,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile "org.grails.plugins:grails-spring-websocket:2.4.0.BUILD-SNAPSHOT"
+	compile "org.grails.plugins:grails-spring-websocket:2.4.0.M1"
 
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
 
