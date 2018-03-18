@@ -2,43 +2,51 @@
 
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
 
-You can use the corresponding Spring docs/apis/samples as a reference.  
+You can also use the corresponding Spring docs/apis/samples as a reference.
+
 That is mentioned multiple times in this readme because there is everything explained in fine detail.
 
 Grails version requirements:
 <table>
-	<tr>
-		<th>grails-spring-websocket</th>
-		<th>Grails</th>
-	</tr>
-	<tr>
-		<td>2.2.0</td>
-		<td>3.0.10+</td>
-	</tr>
-	<tr>
-		<td>2.3.0</td>
-		<td>3.1.0+</td>
-	</tr>
-	<tr>
-		<td>2.4.0</td>
-		<td>3.2.7+</td>
-	</tr>
+    <tr>
+        <th>grails-spring-websocket</th>
+        <th>Grails</th>
+    </tr>
+    <tr>
+        <td>2.2.0</td>
+        <td>3.0.10+</td>
+    </tr>
+    <tr>
+        <td>2.3.0</td>
+        <td>3.1.0+</td>
+    </tr>
+    <tr>
+        <td>2.4.0</td>
+        <td>3.2.7+</td>
+    </tr>
 </table>
 
 ## Installation
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-	compile "org.grails.plugins:grails-spring-websocket:2.4.0.M1"
+    compile "org.grails.plugins:grails-spring-websocket:2.4.0"
 
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
 
 ## Usage
 
-The plugin makes the Spring websocket/messaging web-mvc controller annotations useable in Grails controllers, too.
+The plugin makes the Spring websocket/messaging web-mvc annotations useable in Grails, too.
+
+Those annotations can be used in:
+* Regular Grails controllers
+* `WebSocket` Grails artefacts (`grails create-web-socket my.package.name.MyWebSocket`)
+* Spring `@Controller` beans
 
 I think basic usage is explained best by example code.
+
 But: the code below is just some very minimal it-works proof.
+
 Check the Spring docs/apis/samples for more advanced use-cases, e.g. security and authentication.
 
 ### Controller (annotated handler method)
@@ -53,20 +61,39 @@ import org.springframework.messaging.handler.annotation.SendTo
 
 class ExampleController {
 
-	def index() {}
+    def index() {}
 
-	@MessageMapping("/hello")
-	@SendTo("/topic/hello")
-	protected String hello(String world) {
-		return "hello from controller, ${world}!"
-	}
+    @MessageMapping("/hello")
+    @SendTo("/topic/hello")
+    protected String hello(String world) {
+        return "hello, ${world}!"
+    }
 
 }
 ```
 
-Unless you want your handler method to be exposed as controller action, you should define the annotated method as protected or add an additional annotation `@grails.web.controllers.ControllerMethod`.
+Unless you want your handler method to be exposed as a Grails controller action, you should define the annotated method as protected or add an additional annotation `@grails.web.controllers.ControllerMethod`.
 
-Spring `@Controller` beans can be used as well.
+Alternatively, `WebSocket` Grails artefacts and/or Spring `@Controller` beans can be used as well, for example:
+
+*/grails-app/websockets/example/ExampleWebSocket.groovy*:
+
+```groovy
+package example
+
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.messaging.handler.annotation.SendTo
+
+class ExampleWebSocket {
+
+    @MessageMapping("/hello")
+    @SendTo("/topic/hello")
+    String hello(String world) {
+        return "hello, ${world}!"
+    }
+
+}
+```
 
 ### Client-side (sock.js / stomp.js)
 
@@ -75,59 +102,82 @@ Spring `@Controller` beans can be used as well.
 ```gsp
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta name="layout" content="main"/>
+    <head>
+        <meta name="layout" content="main"/>
 
-		<asset:javascript src="application" />
-		<asset:javascript src="spring-websocket" />
+        <asset:javascript src="application" />
+        <asset:javascript src="spring-websocket" />
 
-		<script type="text/javascript">
-		 	$(function() {
-				var socket = new SockJS("${createLink(uri: '/stomp')}");
-				var client = Stomp.over(socket);
+        <script type="text/javascript">
+             $(function() {
+                var socket = new SockJS("${createLink(uri: '/stomp')}");
+                var client = Stomp.over(socket);
 
-				client.connect({}, function() {
-					client.subscribe("/topic/hello", function(message) {
-						$("#helloDiv").append(message.body);
-					});
-				});
+                client.connect({}, function() {
+                    client.subscribe("/topic/hello", function(message) {
+                        $("#helloDiv").append(message.body);
+                    });
+                });
 
-				$("#helloButton").click(function() {
-					client.send("/app/hello", {}, JSON.stringify("world"));
-				});
-			});
-		</script>
-	</head>
-	<body>
-		<button id="helloButton">hello</button>
-		<div id="helloDiv"></div>
-	</body>
+                $("#helloButton").click(function() {
+                    client.send("/app/hello", {}, JSON.stringify("world"));
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <button id="helloButton">hello</button>
+        <div id="helloDiv"></div>
+    </body>
 </html>
 ```
 
 This would be the index view of the controller above. The js connects to the message broker and subscribes to <code>/topic/hello</code>.
-For this example, i added a button allowing to trigger a send/receive roundtrip.
+
+For this example, I added a button allowing to trigger a send/receive roundtrip.
 
 While this example shows jquery used with the asset-pipeline plugin, the use of jquery is **not required**.
 
 ### Service (brokerMessagingTemplate bean)
 
-You can also inject and use the <code>brokerMessagingTemplate</code> bean to send messages directly, e.g. from a service.
+To send messages directly, the `brokerMessagingTemplate` bean (of type `SimpMessageSendingOperations`) can be used.
+
+The plugin provides a `WebSocket` trait that autowires the `brokerMessagingTemplate` and delegates to it.
+
+That `WebSocket` trait is automatically implemented by `WebSocket` artefacts but you can implement it from other beans as well, e.g. from a service.
 
 */grails-app/services/example/ExampleService.groovy*:
 
 ```groovy
 package example
 
-import org.springframework.messaging.simp.SimpMessagingTemplate
+import grails.plugin.springwebsocket.WebSocket
+
+class ExampleService implements WebSocket {
+
+    void hello() {
+        convertAndSend "/topic/hello", "hello from service!"
+    }
+
+}
+```
+
+Or, if you prefer, you can also inject and use the `brokerMessagingTemplate` bean directly.
+
+*/grails-app/services/example/ExampleService.groovy*:
+
+```groovy
+package example
+
+import org.springframework.messaging.simp.SimpMessageSendingOperations
 
 class ExampleService {
 
-	SimpMessagingTemplate brokerMessagingTemplate
+    SimpMessageSendingOperations brokerMessagingTemplate
 
-	void hello() {
-		brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
-	}
+    void hello() {
+        brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
+    }
 
 }
 ```
@@ -144,7 +194,8 @@ By default, a configuration bean named `webSocketConfig` of type `grails.plugin.
 * The prefixes for broker destinations ("outgoing messages") are: `/queue` or `/topic`
 * The prefix for application destinations ("incoming messages") is: `/app`
 * The stomp-endpoint URI is: `/stomp`
-* A `SimpAnnotationMethodMessageHandler` bean is defined to allow Grails controller methods to act as message handlers
+* A `GrailsSimpAnnotationMethodMessageHandler` bean is defined to allow Grails controller methods to act as message handlers
+* A `GrailsWebSocketAnnotationMethodMessageHandler` bean is defined to allow Grails webSocket methods to act as message handlers
 
 If the default values are fine for your application, you are good to go. No configuration required then.
 
@@ -154,7 +205,7 @@ If you want to customize the defaults, you should override the config bean provi
 
 As starting point, you can create a config class/bean very similar to the default config with:
 
-	grails create-web-socket-config my.package.name.MyClassName
+    grails create-web-socket-config my.package.name.MyClassName
 
 That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`, e.g. like this:
 
@@ -162,7 +213,7 @@ That class will be placed under `src/main/groovy` and needs to be registered as 
 
 ```groovy
 beans = {
-	webSocketConfig my.package.name.MyClassName
+    webSocketConfig my.package.name.MyClassName
 }
 ```
 
@@ -173,11 +224,13 @@ From there, check the Spring docs/apis/samples for the available configuration o
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add two dependencies for TCP connection management.
 
-	compile "io.projectreactor:reactor-net"
-	compile "io.netty:netty-all:4.0.33.Final"
+    compile "io.projectreactor:reactor-net"
+    compile "io.netty:netty-all:4.1.20.Final"
 
 Both are optional dependencies and as such have to be added explicitly.
+
 The version can be omitted for `reactor-net` because it is included in the Spring Boot BOM.
+
 A sensible default for the version of `netty-all` is the one that your current version of `spring-messaging` declares as dependency.
 
 ## User Destinations
@@ -189,30 +242,27 @@ To send messages to specific users, you can (among other ways) annotate message 
 ```groovy
 class ExampleController {
 
-	SimpMessagingTemplate brokerMessagingTemplate
-
-	@MessageMapping("/hello")
-	@SendToUser("/queue/hello")
-	protected String hello(String world) {
-		return "hello from controller, ${world}!"
-	}
+    @MessageMapping("/hello")
+    @SendToUser("/queue/hello")
+    protected String hello(String world) {
+        return "hello from controller, ${world}!"
+    }
 
 }
 ```
 
 To receive messages for the above `/queue/hello` user destination, the js client would have to subscribe to `/user/queue/hello`.
+
 If a user is not logged in, `@SendToUser` will still work and only the user who sent the ingoing message will receive the outgoing one returned by the method.
 
 */grails-app/services/example/ExampleService.groovy*:
 
 ```groovy
-class ExampleService {
+class ExampleService implements WebSocket {
 
-	SimpMessagingTemplate brokerMessagingTemplate
-
-	void hello() {
-		brokerMessagingTemplate.convertAndSendToUser("myTargetUsername", "/queue/hello", "hello, target user!")
-	}
+    void hello() {
+        convertAndSendToUser("myTargetUsername", "/queue/hello", "hello, target user!")
+    }
 
 }
 ```
@@ -222,6 +272,7 @@ Again, to receive messages for the above `/queue/hello` user destination, the js
 ## Security
 
 To secure websocket messaging, we can leverage the first-class websocket security support of Spring Security 4.0+.
+
 Check the Spring Security docs and the Spring Guides to get a jump-start into the topic.
 
 There is a variety of options how to build your solution, including:
@@ -237,9 +288,9 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 
 ```groovy
 dependencies {
-	compile "org.springframework.security:spring-security-config:4.0.3.RELEASE"
-	compile "org.springframework.security:spring-security-messaging:4.0.3.RELEASE"
-	compile "org.springframework.security:spring-security-web:4.0.3.RELEASE"
+    compile "org.springframework.security:spring-security-config:5.0.3.RELEASE"
+    compile "org.springframework.security:spring-security-messaging:5.0.3.RELEASE"
+    compile "org.springframework.security:spring-security-web:5.0.3.RELEASE"
 }
 ```
 
@@ -251,38 +302,39 @@ dependencies {
 @EnableWebSecurity
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.httpBasic()
-		http.authorizeRequests().anyRequest().authenticated()
-	}
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.httpBasic()
+        http.authorizeRequests().anyRequest().authenticated()
+    }
 
-	@Autowired
-	void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-			.withUser("user").password("password").roles("USER")
-	}
+    @Autowired
+    void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+            .withUser("user").password("password").roles("USER")
+    }
 
 }
 ```
 
 Spring security will by default enable CSRF protection for websocket messages.
+
 To include the required token in the stomp headers, your js code could look like this:
 
 */grails-app/views/example/index.gsp*:
 
 ```javascript
 $(function() {
-	var url = "${createLink(uri: '/stomp')}";
-	var csrfHeaderName = "${request._csrf.headerName}";
-	var csrfToken = "${request._csrf.token}";
-	var socket = new SockJS(url);
-	var client = Stomp.over(socket);
-	var headers = {};
-	headers[csrfHeaderName] = csrfToken;
-	client.connect(headers, function() {
-		// subscriptions etc. [...]
-	});
+    var url = "${createLink(uri: '/stomp')}";
+    var csrfHeaderName = "${request._csrf.headerName}";
+    var csrfToken = "${request._csrf.token}";
+    var socket = new SockJS(url);
+    var client = Stomp.over(socket);
+    var headers = {};
+    headers[csrfHeaderName] = csrfToken;
+    client.connect(headers, function() {
+        // subscriptions etc. [...]
+    });
 });
 ```
 
@@ -299,27 +351,27 @@ The following example shows a Grails controller with a secured message handler m
 ```groovy
 class ExampleController {
 
-	@ControllerMethod
-	@MessageMapping("/hello")
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@SendTo("/topic/hello")
-	String hello(String world) {
-		return "hello from secured controller, ${world}!"
-	}
-	
-	@ControllerMethod
-	@MessageExceptionHandler
-	@SendToUser(value = "/queue/errors", broadcast = false)
-	String handleException(Exception e) {
-		return "caught ${e.message}"
-	}
-	
+    @ControllerMethod
+    @MessageMapping("/hello")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @SendTo("/topic/hello")
+    String hello(String world) {
+        return "hello from secured controller, ${world}!"
+    }
+    
+    @ControllerMethod
+    @MessageExceptionHandler
+    @SendToUser(value = "/queue/errors", broadcast = false)
+    String handleException(Exception e) {
+        return "caught ${e.message}"
+    }
+    
 }
 ```
 
 Besides the security handling itself, this snippet shows one important catch: if you want to secure Grails controller actions with `@PreAuthorize`, the secured method has to be public. However, as we still do not want the method to be exposed as a controller action but only as message handler, in this case the use of `@ControllerMethod` is required.  
 
-Note that you can still use Spring `@Controller` beans as message handlers which would obviously not require those additional `@ControllerMethod` annotations.
+If you use Grails `WebSocket` artefacts or Spring `@Controller` beans as message handlers, you do obviously not require those additional `@ControllerMethod` annotations.
 
 ### Filtering messages
 
@@ -330,18 +382,18 @@ The following example shows how you can filter inbound messages by type and/or b
 ```groovy
 @Configuration
 class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
-	
-	@Override
-	void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-		messages
-			.nullDestMatcher().authenticated()
-			.simpSubscribeDestMatchers("/user/queue/errors").permitAll()
-			.simpDestMatchers("/app/**").hasRole("USER")
-			.simpSubscribeDestMatchers("/user/**", "/topic/**").hasRole("USER")
-			.simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
-			.anyMessage().denyAll()
-	}
-	
+    
+    @Override
+    void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+        messages
+            .nullDestMatcher().authenticated()
+            .simpSubscribeDestMatchers("/user/queue/errors").permitAll()
+            .simpDestMatchers("/app/**").hasRole("USER")
+            .simpSubscribeDestMatchers("/user/**", "/topic/**").hasRole("USER")
+            .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
+            .anyMessage().denyAll()
+    }
+    
 }
 ```
 
@@ -355,15 +407,13 @@ While there is no special event integration regarding websocket messaging (becau
 
 ```groovy
 @Consumer
-class ExampleService {
-	
-	SimpMessagingTemplate brokerMessagingTemplate
-	
-	@Selector("myEvent")
-	void hello(Event<String> event) {
-		brokerMessagingTemplate.convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
-	}
-	
+class ExampleService implements WebSocket {
+    
+    @Selector("myEvent")
+    void hello(Event<String> event) {
+        convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+    }
+    
 }
 ```
 
@@ -373,28 +423,34 @@ Events can be fired/sent from all application artefacts/beans that implement the
 
 ```groovy
 class ExampleService {
-	
-	void fireMyEvent() {
-		notify "myEvent", "hello from myEvent!"
-	}
-	
+    
+    void fireMyEvent() {
+        notify "myEvent", "hello from myEvent!"
+    }
+    
 }
 ```
 
 */grails-app/init/BootStrap.groovy*:
 
 ```groovy
-class BootStrap implements Events {
+class BootStrap implements Events, WebSocket {
 
-	SimpMessagingTemplate brokerMessagingTemplate
-
-	def init = {
-		on("myEvent") { Event<String> event ->
-			brokerMessagingTemplate.convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
-		}
-	}
+    def init = {
+        on("myEvent") { Event<String> event ->
+            convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+        }
+    }
 
 }
 ```
 
-For further information check the Grails and/or Reactor docs. 
+For further information check the Grails async docs.
+
+## Misc
+
+### Startup performance
+
+Scanning Grails controllers for message handler methods can impact application startup time if you have many controllers.
+
+One way around this is to put your message handler methods into Grails `WebSocket` artefacts instead of Grails controllers and then use a custom websocket config class without the `GrailsSimpAnnotationMethodMessageHandler`.
