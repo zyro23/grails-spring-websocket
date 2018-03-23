@@ -13,15 +13,15 @@ Grails version requirements:
         <th>Grails</th>
     </tr>
     <tr>
-        <td>2.2.0</td>
+        <td>2.2.x</td>
         <td>3.0.10+</td>
     </tr>
     <tr>
-        <td>2.3.0</td>
+        <td>2.3.x</td>
         <td>3.1.0+</td>
     </tr>
     <tr>
-        <td>2.4.0</td>
+        <td>2.4.x</td>
         <td>3.2.7+</td>
     </tr>
 </table>
@@ -30,7 +30,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    compile "org.grails.plugins:grails-spring-websocket:2.4.0"
+    compile "org.grails.plugins:grails-spring-websocket:2.4.1"
 
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
 

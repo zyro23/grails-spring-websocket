@@ -13,7 +13,7 @@ buildscript {
 	}
 }
 
-version "2.4.0"
+version "2.4.1"
 group "org.grails.plugins"
 
 apply plugin: "eclipse"
@@ -46,6 +46,8 @@ dependencies {
 
 	profile "org.grails.profiles:plugin:${grailsVersion}"
 }
+
+bootRepackage.enabled = false
 
 assets.packagePlugin = true
 
