@@ -288,9 +288,9 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 
 ```groovy
 dependencies {
-    compile "org.springframework.security:spring-security-config:5.0.3.RELEASE"
-    compile "org.springframework.security:spring-security-messaging:5.0.3.RELEASE"
-    compile "org.springframework.security:spring-security-web:5.0.3.RELEASE"
+    compile "org.springframework.security:spring-security-config"
+    compile "org.springframework.security:spring-security-messaging"
+    compile "org.springframework.security:spring-security-web"
 }
 ```
 
