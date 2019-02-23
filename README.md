@@ -13,16 +13,12 @@ Grails version requirements:
         <th>Grails</th>
     </tr>
     <tr>
-        <td>2.2.x</td>
-        <td>3.0.10+</td>
-    </tr>
-    <tr>
-        <td>2.3.x</td>
-        <td>3.1.0+</td>
-    </tr>
-    <tr>
         <td>2.4.x</td>
         <td>3.2.7+</td>
+    </tr>
+    <tr>
+        <td>2.5.x</td>
+        <td>4.0.0+</td>
     </tr>
 </table>
 
@@ -30,7 +26,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    compile "org.grails.plugins:grails-spring-websocket:2.4.1"
+    implementation "org.grails.plugins:grails-spring-websocket:2.5.0.M1"
 
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
 
@@ -95,7 +91,7 @@ class ExampleWebSocket {
 }
 ```
 
-### Client-side (sock.js / stomp.js)
+### Client-side (webstomp.js)
 
 */grails-app/views/example/index.gsp*:
 
@@ -111,7 +107,7 @@ class ExampleWebSocket {
         <script type="text/javascript">
              $(function() {
                 var socket = new SockJS("${createLink(uri: '/stomp')}");
-                var client = Stomp.over(socket);
+                var client = webstomp.over(socket);
 
                 client.connect({}, function() {
                     client.subscribe("/topic/hello", function(message) {
@@ -120,7 +116,7 @@ class ExampleWebSocket {
                 });
 
                 $("#helloButton").click(function() {
-                    client.send("/app/hello", {}, JSON.stringify("world"));
+                    client.send("/app/hello", JSON.stringify("world"));
                 });
             });
         </script>
@@ -224,14 +220,12 @@ From there, check the Spring docs/apis/samples for the available configuration o
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add two dependencies for TCP connection management.
 
-    compile "io.projectreactor:reactor-net"
-    compile "io.netty:netty-all:4.1.20.Final"
+    implementation platform("io.netty:netty-bom:4.1.33.Final")
+    implementation platform("io.projectreactor:reactor-bom:Californium-SR5")
+    implementation "io.netty:netty-all"
+    implementation "io.projectreactor.netty:reactor-netty"
 
-Both are optional dependencies and as such have to be added explicitly.
-
-The version can be omitted for `reactor-net` because it is included in the Spring Boot BOM.
-
-A sensible default for the version of `netty-all` is the one that your current version of `spring-messaging` declares as dependency.
+It is a good idea to align the BOM versions with the ones your current spring-boot BOM is using.
 
 ## User Destinations
 
@@ -288,9 +282,9 @@ A working Spring Security setup is required. For the sake of brevity, here a sup
 
 ```groovy
 dependencies {
-    compile "org.springframework.security:spring-security-config"
-    compile "org.springframework.security:spring-security-messaging"
-    compile "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-config"
+    implementation "org.springframework.security:spring-security-messaging"
+    implementation "org.springframework.security:spring-security-web"
 }
 ```
 
@@ -329,7 +323,7 @@ $(function() {
     var csrfHeaderName = "${request._csrf.headerName}";
     var csrfToken = "${request._csrf.token}";
     var socket = new SockJS(url);
-    var client = Stomp.over(socket);
+    var client = webstomp.over(socket);
     var headers = {};
     headers[csrfHeaderName] = csrfToken;
     client.connect(headers, function() {

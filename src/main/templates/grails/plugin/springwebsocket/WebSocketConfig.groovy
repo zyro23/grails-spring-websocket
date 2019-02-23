@@ -9,14 +9,14 @@ import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.SubscribableChannel
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 
 @CompileStatic
 @Configuration
 @EnableWebSocketMessageBroker
-class ${model.className} extends AbstractWebSocketMessageBrokerConfigurer {
+class ${model.className} implements WebSocketMessageBrokerConfigurer {
 
     @Override
     void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
