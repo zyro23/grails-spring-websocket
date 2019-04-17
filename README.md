@@ -26,7 +26,7 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    implementation "org.grails.plugins:grails-spring-websocket:2.5.0.M1"
+    implementation "org.grails.plugins:grails-spring-websocket:2.5.0.RC1"
 
 The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
 
@@ -220,8 +220,8 @@ From there, check the Spring docs/apis/samples for the available configuration o
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add two dependencies for TCP connection management.
 
-    implementation platform("io.netty:netty-bom:4.1.33.Final")
-    implementation platform("io.projectreactor:reactor-bom:Californium-SR5")
+    implementation platform("io.netty:netty-bom:4.1.34.Final")
+    implementation platform("io.projectreactor:reactor-bom:Californium-SR6")
     implementation "io.netty:netty-all"
     implementation "io.projectreactor.netty:reactor-netty"
 

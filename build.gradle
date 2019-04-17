@@ -1,18 +1,18 @@
 buildscript {
 	ext {
-		grailsVersion = "4.0.0.M1"
+		grailsVersion = "4.0.0.RC1"
 	}
 	repositories {
 		mavenLocal()
-		maven { url "http://repo.grails.org/grails/core" }
+		maven { url "https://repo.grails.org/grails/core" }
 	}
 	dependencies {
-		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.7"
+		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.10"
 		classpath "org.grails:grails-gradle-plugin:${grailsVersion}"
 	}
 }
 
-version "2.5.0.M1"
+version "2.5.0.RC1"
 group "org.grails.plugins"
 
 apply plugin: "idea"
@@ -25,27 +25,19 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenLocal()
-	maven { url "http://repo.grails.org/grails/core" }
+	maven { url "https://repo.grails.org/grails/core" }
 }
 
 dependencies {
-	implementation "javax.servlet:javax.servlet-api"
-	implementation "org.grails:grails-plugin-controllers"
-
 	api "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-	api "org.springframework:spring-messaging:5.1.5.RELEASE"
-	api "org.springframework:spring-websocket:5.1.5.RELEASE"
+	api "org.grails:grails-plugin-controllers:4.0.0.RC1"
+	api "org.springframework:spring-messaging:5.1.6.RELEASE"
+	api "org.springframework:spring-websocket:5.1.6.RELEASE"
 }
 
 bootJar.enabled = false
 
 assets.packagePlugin = true
-
-publishing {
-	publications.first().pom.withXml {
-		asNode().dependencies.dependency.exclusions*.replaceNode {}
-	}
-}
 
 grailsPublish {
 	user = project.properties.bintrayUser ?: "."
@@ -56,4 +48,4 @@ grailsPublish {
 	developers = [zyro: "zyro"]
 }
 
-wrapper.gradleVersion = "5.1.1"
+wrapper.gradleVersion = "5.4"
