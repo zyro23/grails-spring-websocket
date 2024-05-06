@@ -6,7 +6,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class SpringWebsocketGrailsPlugin extends Plugin {
 
-	def grailsVersion = "3.1.0 > *"
+	def grailsVersion = "6.0.0 > *"
 	def title = "Spring WebSocket Plugin"
 	def author = "zyro"
 	def authorEmail = ""

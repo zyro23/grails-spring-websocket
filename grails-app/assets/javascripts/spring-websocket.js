@@ -1,3 +1,1 @@
-//=require sockjs
-//=require stomp
-//=require webstomp
+//=require stomp.umd

@@ -1,51 +1,80 @@
 buildscript {
-	ext {
-		grailsVersion = "4.0.0.RC1"
-	}
-	repositories {
-		mavenLocal()
-		maven { url "https://repo.grails.org/grails/core" }
-	}
-	dependencies {
-		classpath "com.bertramlabs.plugins:asset-pipeline-gradle:3.0.10"
-		classpath "org.grails:grails-gradle-plugin:${grailsVersion}"
-	}
+    ext {
+        grailsVersion = "6.2.0"
+    }
 }
 
-version "2.5.0.RC1"
-group "org.grails.plugins"
+plugins {
+    id "groovy"
+    id "java-library"
+    id "org.grails.grails-plugin" version "6.2.0"
+    id "com.bertramlabs.asset-pipeline" version "4.4.0"
+    id "maven-publish"
+    id "signing"
+}
 
-apply plugin: "idea"
-apply plugin: "java-library"
-apply plugin: "org.grails.grails-plugin"
-apply plugin: "org.grails.grails-plugin-publish"
-apply plugin: "com.bertramlabs.asset-pipeline"
-
-sourceCompatibility = 1.8
+group = "io.github.zyro23"
+version = "2.6.0-RC1"
 
 repositories {
-	mavenLocal()
-	maven { url "https://repo.grails.org/grails/core" }
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repo.grails.org/grails/core" }
 }
 
 dependencies {
-	api "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-	api "org.grails:grails-plugin-controllers:4.0.0.RC1"
-	api "org.springframework:spring-messaging:5.1.6.RELEASE"
-	api "org.springframework:spring-websocket:5.1.6.RELEASE"
+    api "com.fasterxml.jackson.core:jackson-databind"
+    api "org.grails:grails-plugin-controllers"
+    api "org.springframework:spring-messaging"
+    api "org.springframework:spring-websocket"
 }
 
-bootJar.enabled = false
+jar.archiveClassifier = ""
 
 assets.packagePlugin = true
 
-grailsPublish {
-	user = project.properties.bintrayUser ?: "."
-	key = project.properties.bintrayKey ?: "."
-	githubSlug = "zyro23/grails-spring-websocket"
-	repo = "maven"
-	license = "Apache-2.0"
-	developers = [zyro: "zyro"]
+publishing {
+    repositories {
+        maven {
+            name("mavenBuild")
+            url(layout.buildDirectory.dir("maven"))
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+            }
+            pom {
+                name = "io.github.zyro23:grails-spring-websocket"
+                description = "Spring WebSocket Plugin"
+                url = "https://github.com/zyro23/grails-spring-websocket"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "zyro"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/zyro23/grails-spring-websocket.git"
+                    developerConnection = "scm:git:ssh://github.com:zyro23/grails-spring-websocket.git"
+                    url = "https://github.com/zyro23/grails-spring-websocket"
+                }
+            }
+        }
+    }
 }
 
-wrapper.gradleVersion = "5.4"
+signing {
+    sign(publishing.publications.maven)
+}

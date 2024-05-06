@@ -6,19 +6,23 @@ You can also use the corresponding Spring docs/apis/samples as a reference.
 
 That is mentioned multiple times in this readme because there is everything explained in fine detail.
 
-Grails version requirements:
+Version compatibility:
 <table>
     <tr>
-        <th>grails-spring-websocket</th>
-        <th>Grails</th>
+        <th>Plugin version</th>
+        <th>Grails version</th>
     </tr>
     <tr>
-        <td>2.4.x</td>
-        <td>3.2.7+</td>
+        <td>io.github.zyro23:grails-spring-websocket:2.6.x</td>
+        <td>6.0.0+</td>
     </tr>
     <tr>
-        <td>2.5.x</td>
+        <td>org.grails.plugins:grails-spring-websocket:2.5.x</td>
         <td>4.0.0+</td>
+    </tr>
+    <tr>
+        <td>org.grails.plugins:grails-spring-websocket:2.4.x</td>
+        <td>3.2.7+</td>
     </tr>
 </table>
 
@@ -26,9 +30,9 @@ Grails version requirements:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    implementation "org.grails.plugins:grails-spring-websocket:2.5.0.RC1"
+    implementation "io.github.zyro23:grails-spring-websocket:2.6.0-RC1"
 
-The plugin is published to bintray, and linked to `grails/plugins` as well as `jcenter`.
+Plugin releases are published to maven central.
 
 ## Usage
 
@@ -91,7 +95,7 @@ class ExampleWebSocket {
 }
 ```
 
-### Client-side (webstomp.js)
+### Client-side (stomp.js)
 
 */grails-app/views/example/index.gsp*:
 
@@ -105,18 +109,18 @@ class ExampleWebSocket {
         <asset:javascript src="spring-websocket" />
 
         <script type="text/javascript">
-             $(function() {
-                var socket = new SockJS("${createLink(uri: '/stomp')}");
-                var client = webstomp.over(socket);
-
-                client.connect({}, function() {
-                    client.subscribe("/topic/hello", function(message) {
-                        $("#helloDiv").append(message.body);
-                    });
+            $(() => {
+                var client = new StompJs.Client({
+                    brokerURL: "ws${createLink(uri: '/stomp', absolute: true).replaceFirst('(?i)http', '')}",
+                    onConnect: () => {
+                        client.subscribe("/topic/hello", (message) => {
+                            $("#helloDiv").append(message.body);
+                        });
+                    },
                 });
-
-                $("#helloButton").click(function() {
-                    client.send("/app/hello", JSON.stringify("world"));
+                client.activate();
+                $("#helloButton").click(() => {
+                    client.publish({ destination: "/app/hello", body: "world" });
                 });
             });
         </script>
@@ -218,14 +222,12 @@ From there, check the Spring docs/apis/samples for the available configuration o
 ### Full-Featured Broker
 
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
-Additionally, add two dependencies for TCP connection management.
+Additionally, add a dependency for TCP connection management.
 
-    implementation platform("io.netty:netty-bom:4.1.34.Final")
-    implementation platform("io.projectreactor:reactor-bom:Californium-SR6")
-    implementation "io.netty:netty-all"
+    implementation platform("io.projectreactor:reactor-bom:2023.0.5")
     implementation "io.projectreactor.netty:reactor-netty"
 
-It is a good idea to align the BOM versions with the ones your current spring-boot BOM is using.
+It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
 
 ## User Destinations
 
@@ -319,16 +321,19 @@ To include the required token in the stomp headers, your js code could look like
 
 ```javascript
 $(function() {
-    var url = "${createLink(uri: '/stomp')}";
+    var url = "ws${createLink(uri: '/stomp', absolute: true).replaceFirst('(?i)http', '')}"
     var csrfHeaderName = "${request._csrf.headerName}";
     var csrfToken = "${request._csrf.token}";
-    var socket = new SockJS(url);
-    var client = webstomp.over(socket);
-    var headers = {};
-    headers[csrfHeaderName] = csrfToken;
-    client.connect(headers, function() {
-        // subscriptions etc. [...]
+    var client = new StompJs.Client({
+        brokerURL: url,
+        connectHeaders: {
+            [csrfHeaderName]: csrfToken
+        },
+        onConnect: () => {
+            // subscriptions etc. [...]
+        },
     });
+    client.activate();
 });
 ```
 
@@ -347,7 +352,7 @@ class ExampleController {
 
     @ControllerMethod
     @MessageMapping("/hello")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @SendTo("/topic/hello")
     String hello(String world) {
         return "hello from secured controller, ${world}!"
