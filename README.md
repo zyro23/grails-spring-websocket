@@ -97,6 +97,22 @@ class ExampleWebSocket {
 
 ### Client-side (stomp.js)
 
+> [!WARNING]
+> asset-pipeline (at least up to version 4.4.0) depends on a rather old version of google closure-compiler that causes an error during asset compilation of `stomp.umd.js` (ref. https://github.com/zyro23/grails-spring-websocket/issues/73).
+>
+> until an updated version of asset-pipeline is available, a workaround is to override the closure-compiler dependency version in `build.gradle` in the `buildSrc/` directory, e.g.: 
+> 
+> ```groovy
+> // buildSrc/build.gradle
+>
+> // ...
+> dependencies {
+>     // ...
+>     implementation("com.google.javascript:closure-compiler-unshaded:v20240317")
+>     // ...
+> }
+> ```
+
 */grails-app/views/example/index.gsp*:
 
 ```gsp
