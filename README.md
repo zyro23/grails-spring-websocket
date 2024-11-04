@@ -13,6 +13,10 @@ Version compatibility:
         <th>Grails version</th>
     </tr>
     <tr>
+        <td>io.github.zyro23:grails-spring-websocket:2.7.x</td>
+        <td>7.0.0+</td>
+    </tr>
+    <tr>
         <td>io.github.zyro23:grails-spring-websocket:2.6.x</td>
         <td>6.0.0+</td>
     </tr>
@@ -28,9 +32,12 @@ Version compatibility:
 
 ## Installation
 
+> [!NOTE]
+> 2.7.0-RC1 will be released as soon as a grails-7.0 release(-candidate) is available
+
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    implementation "io.github.zyro23:grails-spring-websocket:2.6.0-RC1"
+    implementation "io.github.zyro23:grails-spring-websocket:2.7.0-RC1"
 
 Plugin releases are published to maven central.
 
@@ -159,7 +166,7 @@ import grails.plugin.springwebsocket.WebSocket
 class ExampleService implements WebSocket {
 
     void hello() {
-        convertAndSend "/topic/hello", "hello from service!"
+        convertAndSend("/topic/hello", "hello from service!")
     }
 
 }
@@ -179,7 +186,7 @@ class ExampleService {
     SimpMessageSendingOperations brokerMessagingTemplate
 
     void hello() {
-        brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
+        brokerMessagingTemplate.convertAndSend("/topic/hello", "hello from service!")
     }
 
 }
@@ -216,7 +223,7 @@ That class will be placed under `src/main/groovy` and needs to be registered as 
 
 ```groovy
 beans = {
-    webSocketConfig my.package.name.MyClassName
+    webSocketConfig(my.package.name.MyClassName)
 }
 ```
 
@@ -227,7 +234,7 @@ From there, check the Spring docs/apis/samples for the available configuration o
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add a dependency for TCP connection management.
 
-    implementation platform("io.projectreactor:reactor-bom:2023.0.5")
+    implementation platform("io.projectreactor:reactor-bom:2023.0.11")
     implementation "io.projectreactor.netty:reactor-netty"
 
 It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
@@ -427,7 +434,7 @@ Events can be fired/sent from all application artefacts/beans that implement the
 class ExampleService {
     
     void fireMyEvent() {
-        notify "myEvent", "hello from myEvent!"
+        notify("myEvent", "hello from myEvent!")
     }
     
 }
