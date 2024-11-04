@@ -1,20 +1,20 @@
 buildscript {
     ext {
-        grailsVersion = "6.2.0"
+        grailsVersion = "7.0.0-SNAPSHOT"
     }
 }
 
 plugins {
+    id "com.bertramlabs.asset-pipeline" version "5.0.1"
     id "groovy"
     id "java-library"
-    id "org.grails.grails-plugin" version "6.2.0"
-    id "com.bertramlabs.asset-pipeline" version "4.4.0"
     id "maven-publish"
+    id "org.grails.grails-plugin" version "7.0.0-SNAPSHOT"
     id "signing"
 }
 
 group = "io.github.zyro23"
-version = "2.6.0-RC1"
+version = "2.7.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
