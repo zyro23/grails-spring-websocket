@@ -8,9 +8,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations
 @CompileStatic
 trait WebSocket {
 
-	@Autowired
-	@Delegate
-	@Qualifier("brokerMessagingTemplate")
-	SimpMessageSendingOperations brokerMessagingTemplate
+    @Autowired
+    @Delegate
+    @Qualifier("brokerMessagingTemplate")
+    SimpMessageSendingOperations brokerMessagingTemplate
 
 }

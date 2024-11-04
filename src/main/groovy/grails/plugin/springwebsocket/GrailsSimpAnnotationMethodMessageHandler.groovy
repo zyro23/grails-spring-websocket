@@ -25,7 +25,7 @@ class GrailsSimpAnnotationMethodMessageHandler extends SimpAnnotationMethodMessa
 	@Override
 	@Qualifier("brokerMessageConverter")
 	void setMessageConverter(MessageConverter messageConverter) {
-		super.setMessageConverter messageConverter
+		super.setMessageConverter(messageConverter)
 	}
 	
 	@Override

@@ -16,37 +16,35 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 class DefaultWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	@Override
-	void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
-		messageBrokerRegistry.enableSimpleBroker "/queue", "/topic"
-		messageBrokerRegistry.setApplicationDestinationPrefixes "/app"
-	}
+    @Override
+    void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
+        messageBrokerRegistry.enableSimpleBroker "/queue", "/topic"
+        messageBrokerRegistry.setApplicationDestinationPrefixes "/app"
+    }
 
-	@Override
-	void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-		stompEndpointRegistry.addEndpoint("/stomp")
-	}
+    @Override
+    void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
+        stompEndpointRegistry.addEndpoint("/stomp")
+    }
 
-	@Bean
-	GrailsSimpAnnotationMethodMessageHandler grailsSimpAnnotationMethodMessageHandler(
-		SubscribableChannel clientInboundChannel,
-		MessageChannel clientOutboundChannel,
-		SimpMessageSendingOperations brokerMessagingTemplate
-	) {
-		def handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-		handler.destinationPrefixes = ["/app"]
-		return handler
-	}
+    @Bean
+    GrailsSimpAnnotationMethodMessageHandler grailsSimpAnnotationMethodMessageHandler(
+            SubscribableChannel clientInboundChannel,
+            MessageChannel clientOutboundChannel,
+            SimpMessageSendingOperations brokerMessagingTemplate) {
+        def handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
+        handler.destinationPrefixes = ["/app"]
+        return handler
+    }
 
-	@Bean
-	GrailsWebSocketAnnotationMethodMessageHandler grailsWebSocketAnnotationMethodMessageHandler(
-		SubscribableChannel clientInboundChannel,
-		MessageChannel clientOutboundChannel,
-		SimpMessageSendingOperations brokerMessagingTemplate
-	) {
-		def handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
-		handler.destinationPrefixes = ["/app"]
-		return handler
-	}
-	
+    @Bean
+    GrailsWebSocketAnnotationMethodMessageHandler grailsWebSocketAnnotationMethodMessageHandler(
+            SubscribableChannel clientInboundChannel,
+            MessageChannel clientOutboundChannel,
+            SimpMessageSendingOperations brokerMessagingTemplate) {
+        def handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
+        handler.destinationPrefixes = ["/app"]
+        return handler
+    }
+
 }

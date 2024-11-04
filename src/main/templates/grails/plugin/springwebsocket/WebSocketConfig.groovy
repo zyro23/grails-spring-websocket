@@ -31,10 +31,9 @@ class ${model.className} implements WebSocketMessageBrokerConfigurer {
 
     @Bean
     GrailsSimpAnnotationMethodMessageHandler grailsSimpAnnotationMethodMessageHandler(
-        SubscribableChannel clientInboundChannel,
-        MessageChannel clientOutboundChannel,
-        SimpMessageSendingOperations brokerMessagingTemplate
-    ) {
+            SubscribableChannel clientInboundChannel,
+            MessageChannel clientOutboundChannel,
+            SimpMessageSendingOperations brokerMessagingTemplate) {
         def handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
@@ -42,10 +41,9 @@ class ${model.className} implements WebSocketMessageBrokerConfigurer {
 
     @Bean
     GrailsWebSocketAnnotationMethodMessageHandler grailsWebSocketAnnotationMethodMessageHandler(
-        SubscribableChannel clientInboundChannel,
-        MessageChannel clientOutboundChannel,
-        SimpMessageSendingOperations brokerMessagingTemplate
-    ) {
+            SubscribableChannel clientInboundChannel,
+            MessageChannel clientOutboundChannel,
+            SimpMessageSendingOperations brokerMessagingTemplate) {
         def handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
