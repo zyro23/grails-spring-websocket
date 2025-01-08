@@ -1,15 +1,15 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-SNAPSHOT"
+        grailsVersion = "7.0.0-M1"
     }
 }
 
 plugins {
-    id "com.bertramlabs.asset-pipeline" version "5.0.1"
+    id "com.bertramlabs.asset-pipeline" version "5.0.5"
     id "groovy"
     id "java-library"
     id "maven-publish"
-    id "org.grails.grails-plugin" version "7.0.0-SNAPSHOT"
+    id "org.grails.grails-plugin" version "7.0.0-M1"
     id "signing"
 }
 
