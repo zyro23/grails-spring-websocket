@@ -32,7 +32,7 @@ class DefaultWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     GrailsSimpAnnotationMethodMessageHandler grailsSimpAnnotationMethodMessageHandler(
             @Qualifier("clientInboundChannel") SubscribableChannel clientInboundChannel,
             @Qualifier("clientOutboundChannel") MessageChannel clientOutboundChannel,
-            SimpMessageSendingOperations brokerMessagingTemplate) {
+            @Qualifier("brokerMessagingTemplate") SimpMessageSendingOperations brokerMessagingTemplate) {
         GrailsSimpAnnotationMethodMessageHandler handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
@@ -42,7 +42,7 @@ class DefaultWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     GrailsWebSocketAnnotationMethodMessageHandler grailsWebSocketAnnotationMethodMessageHandler(
             @Qualifier("clientInboundChannel") SubscribableChannel clientInboundChannel,
             @Qualifier("clientOutboundChannel") MessageChannel clientOutboundChannel,
-            SimpMessageSendingOperations brokerMessagingTemplate) {
+            @Qualifier("brokerMessagingTemplate") SimpMessageSendingOperations brokerMessagingTemplate) {
         GrailsWebSocketAnnotationMethodMessageHandler handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
