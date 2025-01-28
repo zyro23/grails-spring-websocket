@@ -41,6 +41,18 @@ To install the plugin into a Grails application add the following line to your `
 
 Plugin releases are published to maven central.
 
+### Snapshots
+
+To install a `-SNAPSHOT` version, add the snapshot repository:
+
+    repositories {
+        maven {
+            url("https://central.sonatype.com/repository/maven-snapshots")
+        }
+    }
+
+Available snapshot versions can be found [here](https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/io/github/zyro23/grails-spring-websocket).
+
 ## Usage
 
 The plugin makes the Spring websocket/messaging web-mvc annotations useable in Grails, too.

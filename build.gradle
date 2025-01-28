@@ -39,6 +39,11 @@ publishing {
             name("mavenBuild")
             url(layout.buildDirectory.dir("maven"))
         }
+        maven {
+            name("mavenCentralSnapshots")
+            url("https://central.sonatype.com/repository/maven-snapshots")
+            credentials(PasswordCredentials)
+        }
     }
     publications {
         maven(MavenPublication) {
