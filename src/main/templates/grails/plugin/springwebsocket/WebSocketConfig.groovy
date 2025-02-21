@@ -10,9 +10,9 @@ import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.SubscribableChannel
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
 
 @CompileStatic
 @Configuration
@@ -34,7 +34,7 @@ class ${model.className} implements WebSocketMessageBrokerConfigurer {
     GrailsSimpAnnotationMethodMessageHandler grailsSimpAnnotationMethodMessageHandler(
             @Qualifier("clientInboundChannel") SubscribableChannel clientInboundChannel,
             @Qualifier("clientOutboundChannel") MessageChannel clientOutboundChannel,
-            SimpMessageSendingOperations brokerMessagingTemplate) {
+            @Qualifier("brokerMessagingTemplate") SimpMessageSendingOperations brokerMessagingTemplate) {
         GrailsSimpAnnotationMethodMessageHandler handler = new GrailsSimpAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
@@ -44,10 +44,10 @@ class ${model.className} implements WebSocketMessageBrokerConfigurer {
     GrailsWebSocketAnnotationMethodMessageHandler grailsWebSocketAnnotationMethodMessageHandler(
             @Qualifier("clientInboundChannel") SubscribableChannel clientInboundChannel,
             @Qualifier("clientOutboundChannel") MessageChannel clientOutboundChannel,
-            SimpMessageSendingOperations brokerMessagingTemplate) {
+            @Qualifier("brokerMessagingTemplate") SimpMessageSendingOperations brokerMessagingTemplate) {
         GrailsWebSocketAnnotationMethodMessageHandler handler = new GrailsWebSocketAnnotationMethodMessageHandler(clientInboundChannel, clientOutboundChannel, brokerMessagingTemplate)
         handler.destinationPrefixes = ["/app"]
         return handler
     }
-    
+
 }
