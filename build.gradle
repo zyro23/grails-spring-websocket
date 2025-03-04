@@ -1,15 +1,15 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-M1"
+        grailsVersion = "7.0.0-M2"
     }
 }
 
 plugins {
-    id "com.bertramlabs.asset-pipeline" version "5.0.5"
+    id "com.bertramlabs.asset-pipeline" version "5.0.7"
     id "groovy"
     id "java-library"
     id "maven-publish"
-    id "org.grails.grails-plugin" version "7.0.0-M1"
+    id "org.grails.grails-plugin" version "7.0.0-M2"
     id "signing"
 }
 
@@ -19,7 +19,9 @@ version = "2.7.0-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://repo.grails.org/grails/core" }
+    maven {
+        url = "https://repo.grails.org/grails/core"
+    }
 }
 
 dependencies {
@@ -41,12 +43,12 @@ assets.packagePlugin = true
 publishing {
     repositories {
         maven {
-            name("mavenBuild")
-            url(layout.buildDirectory.dir("maven"))
+            name = "mavenBuild"
+            url = layout.buildDirectory.dir("maven")
         }
         maven {
-            name("mavenCentralSnapshots")
-            url("https://central.sonatype.com/repository/maven-snapshots")
+            name = "mavenCentralSnapshots"
+            url = "https://central.sonatype.com/repository/maven-snapshots"
             credentials(PasswordCredentials)
         }
     }
