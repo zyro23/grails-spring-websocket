@@ -29,6 +29,11 @@ dependencies {
     api "org.springframework:spring-websocket"
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 jar.archiveClassifier = ""
 
 assets.packagePlugin = true
@@ -48,8 +53,6 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")
