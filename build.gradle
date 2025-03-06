@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-M2"
+        grailsVersion = "7.0.0-M3"
     }
 }
 
@@ -9,7 +9,7 @@ plugins {
     id "groovy"
     id "java-library"
     id "maven-publish"
-    id "org.grails.grails-plugin" version "7.0.0-M3"
+    id "org.grails.grails-plugin" version "7.0.0-M4"
     id "signing"
 }
 
