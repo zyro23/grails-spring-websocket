@@ -116,9 +116,6 @@ class ExampleWebSocket {
 
 ### Client-side (stomp.js)
 
-> [!NOTE]
-> make sure to use `asset-pipeline-gradle:4.5.1` or newer
-
 */grails-app/views/example/index.gsp*:
 
 ```gsp
