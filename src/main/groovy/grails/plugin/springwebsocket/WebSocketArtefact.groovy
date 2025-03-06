@@ -7,7 +7,7 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
+@GroovyASTTransformationClass("grails.plugin.springwebsocket.WebSocketArtefactTypeTransformation")
 @Retention(RetentionPolicy.RUNTIME)
 @Target([ElementType.TYPE])
-@GroovyASTTransformationClass("grails.plugin.springwebsocket.WebSocketArtefactTypeTransformation")
 @interface WebSocketArtefact {}

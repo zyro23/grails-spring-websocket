@@ -59,7 +59,7 @@ The plugin makes the Spring websocket/messaging web-mvc annotations useable in G
 
 Those annotations can be used in:
 * Regular Grails controllers
-* `WebSocket` Grails artefacts (`grails create-web-socket my.package.name.MyWebSocket`)
+* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`)
 * Spring `@Controller` beans
 
 I think basic usage is explained best by example code.
@@ -210,34 +210,40 @@ Configuration relies on Spring java config, especially `@EnableWebSocketMessageB
 
 ### Default Configuration
 
-By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is used.
+By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is registered:
 
-* An in-memory `Map`-based message broker implementation is used.
+* An in-memory `Map`-based message broker implementation is used
 * The prefixes for broker destinations ("outgoing messages") are: `/queue` or `/topic`
 * The prefix for application destinations ("incoming messages") is: `/app`
 * The stomp-endpoint URI is: `/stomp`
 * A `GrailsSimpAnnotationMethodMessageHandler` bean is defined to allow Grails controller methods to act as message handlers
 * A `GrailsWebSocketAnnotationMethodMessageHandler` bean is defined to allow Grails webSocket methods to act as message handlers
 
-If the default values are fine for your application, you are good to go. No configuration required then.
+If the default values are fine for your application, you are good to go. No further configuration required then.
 
 ### Custom Configuration
 
-If you want to customize the defaults, you should override the config bean providing your own bean named `webSocketConfig`.
+The default configuration can be customized/overridden by providing a `@Configuration` bean named `webSocketConfig`.
 
-As starting point, you can create a config class/bean very similar to the default config with:
+As starting point, you can create a config class/bean resembling the default config with:
 
-    grails create-web-socket-config my.package.name.MyClassName
+    ./grailsw create-web-socket-config my.package.name.MyClassName
 
-That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`, e.g. like this:
+That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`.
 
-*/grails-app/conf/spring/resources.groovy*:
+That can be accomplished in different ways, depending on your project and preferences, e.g.:
 
-```groovy
-beans = {
-    webSocketConfig(my.package.name.MyClassName)
-}
-```
+* By making sure the class is in a package covered by `@ComponentScan`
+* Or, by adding `@Import(MyClassName)` to your `Application` class
+* Or, by overriding the default config like this (note that bean definition overriding is discouraged):
+
+  */grails-app/conf/spring/resources.groovy*:
+  
+  ```groovy
+  beans = {
+      webSocketConfig(my.package.name.MyClassName)
+  }
+  ```
 
 From there, check the Spring docs/apis/samples for the available configuration options.
 

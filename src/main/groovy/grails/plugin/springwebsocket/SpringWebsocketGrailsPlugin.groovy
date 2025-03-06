@@ -28,7 +28,6 @@ class SpringWebsocketGrailsPlugin extends Plugin {
                     bean.autowire = "byName"
                 }
             }
-            webSocketConfig(DefaultWebSocketConfig)
         }
     }
 
