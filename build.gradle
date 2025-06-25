@@ -1,16 +1,17 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-M3"
+        grailsVersion = "7.0.0-M4"
     }
 }
 
 plugins {
-    id "com.bertramlabs.asset-pipeline" version "5.0.7"
     id "groovy"
     id "java-library"
     id "maven-publish"
-    id "org.grails.grails-plugin" version "7.0.0-M4"
+    id "org.apache.grails.gradle.grails-plugin" version "${grailsVersion}"
     id "signing"
+    // TODO: restore order (move up) with grails-7.0.0-M5+
+    id "cloud.wondrify.asset-pipeline" version "5.0.10-SNAPSHOT"
 }
 
 group = "io.github.zyro23"
@@ -19,14 +20,19 @@ version = "2.7.0-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
+    // TODO: remove with grails-7.0.0+
     maven {
-        url = "https://repo.grails.org/grails/core"
+        url = "https://repository.apache.org/content/groups/staging"
+    }
+    // TODO: remove with asset-pipeline-5.0.10+
+    maven {
+        url("https://central.sonatype.com/repository/maven-snapshots")
     }
 }
 
 dependencies {
     api "com.fasterxml.jackson.core:jackson-databind"
-    api "org.grails:grails-plugin-controllers"
+    api "org.apache.grails:grails-controllers"
     api "org.springframework:spring-messaging"
     api "org.springframework:spring-websocket"
 }

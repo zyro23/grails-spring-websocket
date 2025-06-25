@@ -1,13 +1,26 @@
 pluginManagement {
     repositories {
         mavenLocal()
+        // TODO: remove with grails-7.0.0+
         maven {
-            url = "https://repo.grails.org/grails/core/"
+            url = "https://repository.apache.org/content/groups/staging"
+        }
+        // TODO: remove with asset-pipeline-5.0.10+
+        maven {
+            url("https://central.sonatype.com/repository/maven-snapshots")
         }
         gradlePluginPortal()
+    }
+    // TODO: remove with asset-pipeline-5.0.10+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "cloud.wondrify.asset-pipeline") {
+                useModule("cloud.wondrify:asset-pipeline-gradle:${requested.version}")
+            }
+        }
     }
 }
 
 plugins {
-    id "org.gradle.toolchains.foojay-resolver-convention" version "0.8.0"
+    id "org.gradle.toolchains.foojay-resolver-convention" version "1.0.0"
 }
