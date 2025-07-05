@@ -47,7 +47,7 @@ To install a `-SNAPSHOT` version, add the snapshot repository:
 
     repositories {
         maven {
-            url("https://central.sonatype.com/repository/maven-snapshots")
+            url = "https://central.sonatype.com/repository/maven-snapshots"
         }
     }
 
