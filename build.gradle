@@ -11,7 +11,7 @@ plugins {
     id "org.apache.grails.gradle.grails-plugin" version "${grailsVersion}"
     id "signing"
     // TODO: restore order (move up) with grails-7.0.0-M5+
-    id "cloud.wondrify.asset-pipeline" version "5.0.10-SNAPSHOT"
+    id "cloud.wondrify.asset-pipeline" version "5.0.12"
 }
 
 group = "io.github.zyro23"
@@ -23,10 +23,6 @@ repositories {
     // TODO: remove with grails-7.0.0+
     maven {
         url = "https://repository.apache.org/content/groups/staging"
-    }
-    // TODO: remove with asset-pipeline-5.0.10+
-    maven {
-        url("https://central.sonatype.com/repository/maven-snapshots")
     }
 }
 
