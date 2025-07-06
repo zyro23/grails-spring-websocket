@@ -9,6 +9,8 @@ jobs:
           distribution: liberica
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
       - run: echo "${{ secrets.SIGNING_SECRING_FILE }}" | base64 -d > ${{ github.workspace }}/secring.gpg
       - run: >
           ./gradlew --build-cache publishMavenPublicationToMavenCentralSnapshotsRepository
