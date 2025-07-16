@@ -1,17 +1,16 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-M4"
+        grailsVersion = "7.0.0-M5"
     }
 }
 
 plugins {
+    id "cloud.wondrify.asset-pipeline" version "5.0.12"
     id "groovy"
     id "java-library"
     id "maven-publish"
     id "org.apache.grails.gradle.grails-plugin" version "${grailsVersion}"
     id "signing"
-    // TODO: restore order (move up) with grails-7.0.0-M5+
-    id "cloud.wondrify.asset-pipeline" version "5.0.12"
 }
 
 group = "io.github.zyro23"
