@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-M5"
+        grailsVersion = "7.0.0-RC1"
     }
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.12"
+    id "cloud.wondrify.asset-pipeline" version "5.0.14"
     id "groovy"
     id "java-library"
     id "maven-publish"
@@ -19,10 +19,6 @@ version = "2.7.0-SNAPSHOT"
 repositories {
     mavenLocal()
     mavenCentral()
-    // TODO: remove with grails-7.0.0+
-    maven {
-        url = "https://repository.apache.org/content/groups/staging"
-    }
 }
 
 dependencies {
@@ -52,6 +48,10 @@ publishing {
             name = "mavenCentralSnapshots"
             url = "https://central.sonatype.com/repository/maven-snapshots"
             credentials(PasswordCredentials)
+        }
+        maven {
+            name = "mavenCentralStaging"
+            url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
         }
     }
     publications {

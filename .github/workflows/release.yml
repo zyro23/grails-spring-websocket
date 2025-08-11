@@ -1,6 +1,7 @@
 on: workflow_dispatch
 jobs:
-  release-snapshot:
+  release:
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -13,9 +14,9 @@ jobs:
           cache-read-only: false
       - run: echo "${{ secrets.SIGNING_SECRING_FILE }}" | base64 -d > ${{ github.workspace }}/secring.gpg
       - run: >
-          ./gradlew publishMavenPublicationToMavenCentralSnapshotsRepository
+          ./gradlew publishMavenPublicationToMavenCentralStagingRepository
           -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }}
           -Psigning.password=${{ secrets.SIGNING_PASSWORD }}
           -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg
-          -PmavenCentralSnapshotsUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          -PmavenCentralSnapshotsPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          -PmavenCentralStagingUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          -PmavenCentralStagingPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
