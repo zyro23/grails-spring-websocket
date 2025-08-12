@@ -1,0 +1,64 @@
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: liberica
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - run: ./gradlew test integrationTest
+      - uses: actions/upload-artifact@v4
+        with:
+          path: build/reports
+  release-snapshot:
+    needs:
+      - test
+    if: github.ref_type == 'branch'
+    environment: manual
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: liberica
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - run: echo "${{ secrets.SIGNING_SECRING_FILE }}" | base64 -d > ${{ github.workspace }}/secring.gpg
+      - run: >
+          ./gradlew publishMavenPublicationToMavenCentralSnapshotsRepository
+          -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }}
+          -Psigning.password=${{ secrets.SIGNING_PASSWORD }}
+          -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg
+          -PmavenCentralSnapshotsUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          -PmavenCentralSnapshotsPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+  release:
+    needs:
+      - test
+    if: github.ref_type == 'tag'
+    environment: manual
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: liberica
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+      - run: echo "${{ secrets.SIGNING_SECRING_FILE }}" | base64 -d > ${{ github.workspace }}/secring.gpg
+      - run: >
+          ./gradlew publishMavenPublicationToMavenCentralStagingRepository
+          -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }}
+          -Psigning.password=${{ secrets.SIGNING_PASSWORD }}
+          -Psigning.secretKeyRingFile=${{ github.workspace }}/secring.gpg
+          -PmavenCentralStagingUsername=${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          -PmavenCentralStagingPassword=${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
