@@ -1,6 +1,0 @@
-on: workflow_dispatch
-jobs:
-  release-snapshot:
-    runs-on: ubuntu-24.04
-    steps:
-      - run: echo "noop"
