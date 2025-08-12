@@ -32,9 +32,6 @@ Version compatibility:
 
 ## Installation
 
-> [!NOTE]
-> 2.7.0-RC1 will be released as soon as a grails-7.0 release(-candidate) is available
-
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
     implementation "io.github.zyro23:grails-spring-websocket:2.7.0-RC1"
