@@ -5,6 +5,33 @@
 })(this, (function (exports) { 'use strict';
 
     /**
+     * @internal
+     */
+    function augmentWebsocket(webSocket, debug) {
+        webSocket.terminate = function () {
+            const noOp = () => { };
+            // set all callbacks to no op
+            this.onerror = noOp;
+            this.onmessage = noOp;
+            this.onopen = noOp;
+            const ts = new Date();
+            const id = Math.random().toString().substring(2, 8); // A simulated id
+            const origOnClose = this.onclose;
+            // Track delay in actual closure of the socket
+            this.onclose = closeEvent => {
+                const delay = new Date().getTime() - ts.getTime();
+                debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
+            };
+            this.close();
+            origOnClose?.call(webSocket, {
+                code: 4001,
+                reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
+                wasClean: false,
+            });
+        };
+    }
+
+    /**
      * Some byte values, used as per STOMP specifications.
      *
      * Part of `@stomp/stompjs`.
@@ -25,6 +52,25 @@
      */
     class FrameImpl {
         /**
+         * body of the frame
+         */
+        get body() {
+            if (!this._body && this.isBinaryBody) {
+                this._body = new TextDecoder().decode(this._binaryBody);
+            }
+            return this._body || '';
+        }
+        /**
+         * body as Uint8Array
+         */
+        get binaryBody() {
+            if (!this._binaryBody && !this.isBinaryBody) {
+                this._binaryBody = new TextEncoder().encode(this._body);
+            }
+            // At this stage it will definitely have a valid value
+            return this._binaryBody;
+        }
+        /**
          * Frame constructor. `command`, `headers` and `body` are available as properties.
          *
          * @internal
@@ -43,25 +89,6 @@
             }
             this.escapeHeaderValues = escapeHeaderValues || false;
             this.skipContentLengthHeader = skipContentLengthHeader || false;
-        }
-        /**
-         * body of the frame
-         */
-        get body() {
-            if (!this._body && this.isBinaryBody) {
-                this._body = new TextDecoder().decode(this._binaryBody);
-            }
-            return this._body || '';
-        }
-        /**
-         * body as Uint8Array
-         */
-        get binaryBody() {
-            if (!this._binaryBody && !this.isBinaryBody) {
-                this._binaryBody = new TextEncoder().encode(this._body);
-            }
-            // At this stage it will definitely have a valid value
-            return this._binaryBody;
         }
         /**
          * deserialize a STOMP Frame from raw data.
@@ -419,7 +446,7 @@
         StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
         StompSocketState[StompSocketState["CLOSING"] = 2] = "CLOSING";
         StompSocketState[StompSocketState["CLOSED"] = 3] = "CLOSED";
-    })(exports.StompSocketState = exports.StompSocketState || (exports.StompSocketState = {}));
+    })(exports.StompSocketState || (exports.StompSocketState = {}));
     /**
      * Possible activation state
      */
@@ -428,7 +455,83 @@
         ActivationState[ActivationState["ACTIVE"] = 0] = "ACTIVE";
         ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
         ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
-    })(exports.ActivationState = exports.ActivationState || (exports.ActivationState = {}));
+    })(exports.ActivationState || (exports.ActivationState = {}));
+    /**
+     * Possible reconnection wait time modes
+     */
+    exports.ReconnectionTimeMode = void 0;
+    (function (ReconnectionTimeMode) {
+        ReconnectionTimeMode[ReconnectionTimeMode["LINEAR"] = 0] = "LINEAR";
+        ReconnectionTimeMode[ReconnectionTimeMode["EXPONENTIAL"] = 1] = "EXPONENTIAL";
+    })(exports.ReconnectionTimeMode || (exports.ReconnectionTimeMode = {}));
+    /**
+     * Possible ticker strategies for outgoing heartbeat ping
+     */
+    exports.TickerStrategy = void 0;
+    (function (TickerStrategy) {
+        TickerStrategy["Interval"] = "interval";
+        TickerStrategy["Worker"] = "worker";
+    })(exports.TickerStrategy || (exports.TickerStrategy = {}));
+
+    class Ticker {
+        constructor(_interval, _strategy = exports.TickerStrategy.Interval, _debug) {
+            this._interval = _interval;
+            this._strategy = _strategy;
+            this._debug = _debug;
+            this._workerScript = `
+    var startTime = Date.now();
+    setInterval(function() {
+        self.postMessage(Date.now() - startTime);
+    }, ${this._interval});
+  `;
+        }
+        start(tick) {
+            this.stop();
+            if (this.shouldUseWorker()) {
+                this.runWorker(tick);
+            }
+            else {
+                this.runInterval(tick);
+            }
+        }
+        stop() {
+            this.disposeWorker();
+            this.disposeInterval();
+        }
+        shouldUseWorker() {
+            return typeof (Worker) !== 'undefined' && this._strategy === exports.TickerStrategy.Worker;
+        }
+        runWorker(tick) {
+            this._debug('Using runWorker for outgoing pings');
+            if (!this._worker) {
+                this._worker = new Worker(URL.createObjectURL(new Blob([this._workerScript], { type: 'text/javascript' })));
+                this._worker.onmessage = (message) => tick(message.data);
+            }
+        }
+        runInterval(tick) {
+            this._debug('Using runInterval for outgoing pings');
+            if (!this._timer) {
+                const startTime = Date.now();
+                this._timer = setInterval(() => {
+                    tick(Date.now() - startTime);
+                }, this._interval);
+            }
+        }
+        disposeWorker() {
+            if (this._worker) {
+                this._worker.terminate();
+                delete this._worker;
+                this._debug('Outgoing ping disposeWorker');
+            }
+        }
+        disposeInterval() {
+            if (this._timer) {
+                clearInterval(this._timer);
+                delete this._timer;
+                this._debug('Outgoing ping disposeInterval');
+            }
+        }
+    }
 
     /**
      * Supported STOMP versions
@@ -480,33 +583,6 @@
     ]);
 
     /**
-     * @internal
-     */
-    function augmentWebsocket(webSocket, debug) {
-        webSocket.terminate = function () {
-            const noOp = () => { };
-            // set all callbacks to no op
-            this.onerror = noOp;
-            this.onmessage = noOp;
-            this.onopen = noOp;
-            const ts = new Date();
-            const id = Math.random().toString().substring(2, 8); // A simulated id
-            const origOnClose = this.onclose;
-            // Track delay in actual closure of the socket
-            this.onclose = closeEvent => {
-                const delay = new Date().getTime() - ts.getTime();
-                debug(`Discarded socket (#${id})  closed after ${delay}ms, with code/reason: ${closeEvent.code}/${closeEvent.reason}`);
-            };
-            this.close();
-            origOnClose?.call(webSocket, {
-                code: 4001,
-                reason: `Quick discarding socket (#${id}) without waiting for the shutdown sequence.`,
-                wasClean: false,
-            });
-        };
-    }
-
-    /**
      * The STOMP protocol handler
      *
      * Part of `@stomp/stompjs`.
@@ -514,6 +590,12 @@
      * @internal
      */
     class StompHandler {
+        get connectedVersion() {
+            return this._connectedVersion;
+        }
+        get connected() {
+            return this._connected;
+        }
         constructor(_client, _webSocket, config) {
             this._client = _client;
             this._webSocket = _webSocket;
@@ -605,12 +687,6 @@
             this.onUnhandledReceipt = config.onUnhandledReceipt;
             this.onUnhandledFrame = config.onUnhandledFrame;
         }
-        get connectedVersion() {
-            return this._connectedVersion;
-        }
-        get connected() {
-            return this._connected;
-        }
         start() {
             const parser = new Parser(
             // On Frame
@@ -677,12 +753,13 @@
             if (this.heartbeatOutgoing !== 0 && serverIncoming !== 0) {
                 const ttl = Math.max(this.heartbeatOutgoing, serverIncoming);
                 this.debug(`send PING every ${ttl}ms`);
-                this._pinger = setInterval(() => {
+                this._pinger = new Ticker(ttl, this._client.heartbeatStrategy, this.debug);
+                this._pinger.start(() => {
                     if (this._webSocket.readyState === exports.StompSocketState.OPEN) {
                         this._webSocket.send(BYTE.LF);
                         this.debug('>>> PING');
                     }
-                }, ttl);
+                });
             }
             if (this.heartbeatIncoming !== 0 && serverOutgoing !== 0) {
                 const ttl = Math.max(this.heartbeatIncoming, serverOutgoing);
@@ -788,7 +865,7 @@
         _cleanUp() {
             this._connected = false;
             if (this._pinger) {
-                clearInterval(this._pinger);
+                this._pinger.stop();
                 this._pinger = undefined;
             }
             if (this._ponger) {
@@ -898,6 +975,46 @@
      */
     class Client {
         /**
+         * Underlying WebSocket instance, READONLY.
+         */
+        get webSocket() {
+            return this._stompHandler?._webSocket;
+        }
+        /**
+         * Disconnection headers.
+         */
+        get disconnectHeaders() {
+            return this._disconnectHeaders;
+        }
+        set disconnectHeaders(value) {
+            this._disconnectHeaders = value;
+            if (this._stompHandler) {
+                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+            }
+        }
+        /**
+         * `true` if there is an active connection to STOMP Broker
+         */
+        get connected() {
+            return !!this._stompHandler && this._stompHandler.connected;
+        }
+        /**
+         * version of STOMP protocol negotiated with the server, READONLY
+         */
+        get connectedVersion() {
+            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
+        }
+        /**
+         * if the client is active (connected or going to reconnect)
+         */
+        get active() {
+            return this.state === exports.ActivationState.ACTIVE;
+        }
+        _changeState(state) {
+            this.state = state;
+            this.onChangeState(state);
+        }
+        /**
          * Create an instance.
          */
         constructor(conf = {}) {
@@ -921,6 +1038,30 @@
              */
             this.reconnectDelay = 5000;
             /**
+             * tracking the time to the next reconnection. Initialized to [Client#reconnectDelay]{@link Client#reconnectDelay}'s value and it may
+             * change depending on the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} setting
+             */
+            this._nextReconnectDelay = 0;
+            /**
+             * Maximum time to wait between reconnects, in milliseconds. Defaults to 15 minutes.
+             * Only relevant when [Client#reconnectTimeMode]{@link Client#reconnectTimeMode} not LINEAR (e.g., EXPONENTIAL).
+             * Set to 0 for no limit on wait time.
+             */
+            this.maxReconnectDelay = 15 * 60 * 1000; // 15 minutes in ms
+            /**
+             * Reconnection wait time mode, either linear (default) or exponential.
+             * Note: See [Client#maxReconnectDelay]{@link Client#maxReconnectDelay} for setting the maximum delay when exponential
+             *
+             * ```javascript
+             * client.configure({
+             *   reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
+             *   reconnectDelay: 200, // It will wait 200, 400, 800 ms...
+             *   maxReconnectDelay: 10000, // Optional, when provided, it will not wait more that these ms
+             * })
+             * ```
+             */
+            this.reconnectTimeMode = exports.ReconnectionTimeMode.LINEAR;
+            /**
              * Incoming heartbeat interval in milliseconds. Set to 0 to disable.
              */
             this.heartbeatIncoming = 10000;
@@ -928,6 +1069,22 @@
              * Outgoing heartbeat interval in milliseconds. Set to 0 to disable.
              */
             this.heartbeatOutgoing = 10000;
+            /**
+             * Outgoing heartbeat strategy.
+             * See https://github.com/stomp-js/stompjs/pull/579
+             *
+             * Can be worker or interval strategy, but will always use `interval`
+             * if web workers are unavailable, for example, in a non-browser environment.
+             *
+             * Using Web Workers may work better on long-running pages
+             * and mobile apps, as the browser may suspend Timers in the main page.
+             * Try the `Worker` mode if you discover disconnects when the browser tab is in the background.
+             *
+             * When used in a JS environment, use 'worker' or 'interval' as valid values.
+             *
+             * Defaults to `interval` strategy.
+             */
+            this.heartbeatStrategy = exports.TickerStrategy.Interval;
             /**
              * This switches on a non-standard behavior while sending WebSocket packets.
              * It splits larger (text) packets into chunks of [maxWebSocketChunkSize]{@link Client#maxWebSocketChunkSize}.
@@ -1004,56 +1161,23 @@
             this.configure(conf);
         }
         /**
-         * Underlying WebSocket instance, READONLY.
-         */
-        get webSocket() {
-            return this._stompHandler?._webSocket;
-        }
-        /**
-         * Disconnection headers.
-         */
-        get disconnectHeaders() {
-            return this._disconnectHeaders;
-        }
-        set disconnectHeaders(value) {
-            this._disconnectHeaders = value;
-            if (this._stompHandler) {
-                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
-            }
-        }
-        /**
-         * `true` if there is an active connection to STOMP Broker
-         */
-        get connected() {
-            return !!this._stompHandler && this._stompHandler.connected;
-        }
-        /**
-         * version of STOMP protocol negotiated with the server, READONLY
-         */
-        get connectedVersion() {
-            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
-        }
-        /**
-         * if the client is active (connected or going to reconnect)
-         */
-        get active() {
-            return this.state === exports.ActivationState.ACTIVE;
-        }
-        _changeState(state) {
-            this.state = state;
-            this.onChangeState(state);
-        }
-        /**
          * Update configuration.
          */
         configure(conf) {
             // bulk assign all properties to this
             Object.assign(this, conf);
+            // Warn on incorrect maxReconnectDelay settings
+            if (this.maxReconnectDelay > 0 &&
+                this.maxReconnectDelay < this.reconnectDelay) {
+                this.debug(`Warning: maxReconnectDelay (${this.maxReconnectDelay}ms) is less than reconnectDelay (${this.reconnectDelay}ms). Using reconnectDelay as the maxReconnectDelay delay.`);
+                this.maxReconnectDelay = this.reconnectDelay;
+            }
         }
         /**
          * Initiate the connection with the broker.
          * If the connection breaks, as per [Client#reconnectDelay]{@link Client#reconnectDelay},
-         * it will keep trying to reconnect.
+         * it will keep trying to reconnect. If the [Client#reconnectTimeMode]{@link Client#reconnectTimeMode}
+         * is set to EXPONENTIAL it will increase the wait time exponentially
          *
          * Call [Client#deactivate]{@link Client#deactivate} to disconnect and stop reconnection attempts.
          */
@@ -1064,6 +1188,7 @@
                     return;
                 }
                 this._changeState(exports.ActivationState.ACTIVE);
+                this._nextReconnectDelay = this.reconnectDelay;
                 this._connect();
             };
             // if it is deactivating, wait for it to complete before activating.
@@ -1078,7 +1203,7 @@
             }
         }
         async _connect() {
-            await this.beforeConnect();
+            await this.beforeConnect(this);
             if (this._stompHandler) {
                 this.debug('There is already a stompHandler, skipping the call to connect');
                 return;
@@ -1113,6 +1238,7 @@
                 disconnectHeaders: this._disconnectHeaders,
                 heartbeatIncoming: this.heartbeatIncoming,
                 heartbeatOutgoing: this.heartbeatOutgoing,
+                heartbeatStrategy: this.heartbeatStrategy,
                 splitLargeFrames: this.splitLargeFrames,
                 maxWebSocketChunkSize: this.maxWebSocketChunkSize,
                 forceBinaryWSFrames: this.forceBinaryWSFrames,
@@ -1181,11 +1307,18 @@
             return webSocket;
         }
         _schedule_reconnect() {
-            if (this.reconnectDelay > 0) {
-                this.debug(`STOMP: scheduling reconnection in ${this.reconnectDelay}ms`);
+            if (this._nextReconnectDelay > 0) {
+                this.debug(`STOMP: scheduling reconnection in ${this._nextReconnectDelay}ms`);
                 this._reconnector = setTimeout(() => {
+                    if (this.reconnectTimeMode === exports.ReconnectionTimeMode.EXPONENTIAL) {
+                        this._nextReconnectDelay = this._nextReconnectDelay * 2;
+                        // Truncated exponential backoff with a set limit unless disabled
+                        if (this.maxReconnectDelay !== 0) {
+                            this._nextReconnectDelay = Math.min(this._nextReconnectDelay, this.maxReconnectDelay);
+                        }
+                    }
                     this._connect();
-                }, this.reconnectDelay);
+                }, this._nextReconnectDelay);
             }
         }
         /**
@@ -1220,6 +1353,8 @@
                 return Promise.resolve();
             }
             this._changeState(exports.ActivationState.DEACTIVATING);
+            // Reset reconnection timer just to be safe
+            this._nextReconnectDelay = 0;
             // Clear if a reconnection was scheduled
             if (this._reconnector) {
                 clearTimeout(this._reconnector);

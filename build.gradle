@@ -1,50 +1,68 @@
 buildscript {
     ext {
-        grailsVersion = "6.2.0"
+        grailsVersion = "7.0.0-RC1"
     }
 }
 
 plugins {
+    id "cloud.wondrify.asset-pipeline" version "5.0.14"
     id "groovy"
     id "java-library"
-    id "org.grails.grails-plugin" version "6.2.0"
-    id "com.bertramlabs.asset-pipeline" version "4.4.0"
     id "maven-publish"
+    id "org.apache.grails.gradle.grails-plugin" version "${grailsVersion}"
     id "signing"
 }
 
 group = "io.github.zyro23"
-version = "2.6.0-RC1"
+version = "2.7.0-RC1"
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://repo.grails.org/grails/core" }
 }
 
 dependencies {
     api "com.fasterxml.jackson.core:jackson-databind"
-    api "org.grails:grails-plugin-controllers"
+    api "org.apache.grails:grails-controllers"
     api "org.springframework:spring-messaging"
     api "org.springframework:spring-websocket"
+
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-web"
+    integrationTestImplementation "org.spockframework:spock-core:2.4-M6-groovy-4.0"
+    integrationTestImplementation "org.spockframework:spock-spring:2.4-M6-groovy-4.0"
 }
 
-jar.archiveClassifier = ""
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
 
 assets.packagePlugin = true
 
 publishing {
     repositories {
         maven {
-            name("mavenBuild")
-            url(layout.buildDirectory.dir("maven"))
+            name = "mavenBuild"
+            url = layout.buildDirectory.dir("maven")
+        }
+        maven {
+            name = "mavenCentralSnapshots"
+            url = "https://central.sonatype.com/repository/maven-snapshots"
+            credentials(PasswordCredentials)
+        }
+        maven {
+            name = "mavenCentralStaging"
+            url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
+            credentials(PasswordCredentials)
         }
     }
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             versionMapping {
                 usage("java-api") {
                     fromResolutionOf("runtimeClasspath")
@@ -77,4 +95,8 @@ publishing {
 
 signing {
     sign(publishing.publications.maven)
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
 }

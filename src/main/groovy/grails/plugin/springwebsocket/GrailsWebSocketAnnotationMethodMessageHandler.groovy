@@ -12,24 +12,23 @@ import org.springframework.messaging.simp.annotation.support.SimpAnnotationMetho
 @CompileStatic
 class GrailsWebSocketAnnotationMethodMessageHandler extends SimpAnnotationMethodMessageHandler {
 
-	GrailsWebSocketAnnotationMethodMessageHandler(
-		SubscribableChannel clientInboundChannel,
-		MessageChannel clientOutboundChannel,
-		SimpMessageSendingOperations brokerTemplate
-	) {
-		super(clientInboundChannel, clientOutboundChannel, brokerTemplate)
-	}
+    GrailsWebSocketAnnotationMethodMessageHandler(
+            SubscribableChannel clientInboundChannel,
+            MessageChannel clientOutboundChannel,
+            SimpMessageSendingOperations brokerTemplate) {
+        super(clientInboundChannel, clientOutboundChannel, brokerTemplate)
+    }
 
-	@Autowired
-	@Override
-	@Qualifier("brokerMessageConverter")
-	void setMessageConverter(MessageConverter messageConverter) {
-		super.setMessageConverter messageConverter
-	}
+    @Autowired
+    @Override
+    @Qualifier("brokerMessageConverter")
+    void setMessageConverter(MessageConverter messageConverter) {
+        super.setMessageConverter(messageConverter)
+    }
 
-	@Override
-	protected boolean isHandler(Class<?> beanType) {
-		return WebSocket.isAssignableFrom(beanType)
-	}
+    @Override
+    protected boolean isHandler(Class<?> beanType) {
+        return WebSocket.isAssignableFrom(beanType)
+    }
 
 }

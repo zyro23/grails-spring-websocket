@@ -13,6 +13,10 @@ Version compatibility:
         <th>Grails version</th>
     </tr>
     <tr>
+        <td>io.github.zyro23:grails-spring-websocket:2.7.x</td>
+        <td>7.0.0+</td>
+    </tr>
+    <tr>
         <td>io.github.zyro23:grails-spring-websocket:2.6.x</td>
         <td>6.0.0+</td>
     </tr>
@@ -30,17 +34,33 @@ Version compatibility:
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 
-    implementation "io.github.zyro23:grails-spring-websocket:2.6.0-RC1"
+    implementation "io.github.zyro23:grails-spring-websocket:2.7.0-RC1"
 
 Plugin releases are published to maven central.
 
+### Snapshots
+
+To install a `-SNAPSHOT` version, add the snapshot repository:
+
+    repositories {
+        maven {
+            url = "https://central.sonatype.com/repository/maven-snapshots"
+        }
+    }
+
+And add the following line to your `build.gradle` dependencies section:
+
+    implementation "io.github.zyro23:grails-spring-websocket:2.7.0-SNAPSHOT"
+
+Plugin snapshots are published to the maven central snapshot repository which has an automatic cleanup policy (90 days).
+
 ## Usage
 
-The plugin makes the Spring websocket/messaging web-mvc annotations useable in Grails, too.
+The plugin makes the Spring websocket/messaging web-mvc annotations usable in Grails, too.
 
 Those annotations can be used in:
 * Regular Grails controllers
-* `WebSocket` Grails artefacts (`grails create-web-socket my.package.name.MyWebSocket`)
+* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`)
 * Spring `@Controller` beans
 
 I think basic usage is explained best by example code.
@@ -97,9 +117,6 @@ class ExampleWebSocket {
 
 ### Client-side (stomp.js)
 
-> [!NOTE]
-> make sure to use `asset-pipeline-gradle:4.5.1` or newer
-
 */grails-app/views/example/index.gsp*:
 
 ```gsp
@@ -147,7 +164,7 @@ To send messages directly, the `brokerMessagingTemplate` bean (of type `SimpMess
 
 The plugin provides a `WebSocket` trait that autowires the `brokerMessagingTemplate` and delegates to it.
 
-That `WebSocket` trait is automatically implemented by `WebSocket` artefacts but you can implement it from other beans as well, e.g. from a service.
+That `WebSocket` trait is automatically implemented by `WebSocket` artefacts, but you can implement it from other beans as well, e.g. from a service.
 
 */grails-app/services/example/ExampleService.groovy*:
 
@@ -159,7 +176,7 @@ import grails.plugin.springwebsocket.WebSocket
 class ExampleService implements WebSocket {
 
     void hello() {
-        convertAndSend "/topic/hello", "hello from service!"
+        convertAndSend("/topic/hello", "hello from service!")
     }
 
 }
@@ -179,7 +196,7 @@ class ExampleService {
     SimpMessageSendingOperations brokerMessagingTemplate
 
     void hello() {
-        brokerMessagingTemplate.convertAndSend "/topic/hello", "hello from service!"
+        brokerMessagingTemplate.convertAndSend("/topic/hello", "hello from service!")
     }
 
 }
@@ -191,43 +208,53 @@ Configuration relies on Spring java config, especially `@EnableWebSocketMessageB
 
 ### Default Configuration
 
-By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is used.
+By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is registered:
 
-* An in-memory `Map`-based message broker implementation is used.
+* An in-memory `Map`-based message broker implementation is used
 * The prefixes for broker destinations ("outgoing messages") are: `/queue` or `/topic`
 * The prefix for application destinations ("incoming messages") is: `/app`
 * The stomp-endpoint URI is: `/stomp`
 * A `GrailsSimpAnnotationMethodMessageHandler` bean is defined to allow Grails controller methods to act as message handlers
 * A `GrailsWebSocketAnnotationMethodMessageHandler` bean is defined to allow Grails webSocket methods to act as message handlers
 
-If the default values are fine for your application, you are good to go. No configuration required then.
+If the default values are fine for your application, you are good to go. No further configuration required then.
 
 ### Custom Configuration
 
-If you want to customize the defaults, you should override the config bean providing your own bean named `webSocketConfig`.
+The default configuration can be customized/overridden by providing a `@Configuration` bean named `webSocketConfig`.
 
-As starting point, you can create a config class/bean very similar to the default config with:
+As a starting point, you can take a look at `DefaultWebSocketConfig` or you can create a config class/bean resembling the default config with:
 
-    grails create-web-socket-config my.package.name.MyClassName
+    ./grailsw create-web-socket-config my.package.name.MyClassName
 
-That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`, e.g. like this:
+That class will be placed under `src/main/groovy` and needs to be registered as a Spring configuration bean named `webSocketConfig`.
 
+That can be accomplished in different ways, depending on your project and preferences, e.g.:
+
+* By making sure the class is in a package covered by `@ComponentScan`
+* Or, by adding `@Import(MyClassName)` to your `Application` class
+
+As an alternative, you can disable the `WebSocketAutoConfiguration` explicitly and use a custom config with a different name or register it via the grails spring bean dsl: 
+
+* Add `@EnableAutoConfiguration(exclude = WebSocketAutoConfiguration)` to your `Application` class
+* Or, configure `spring.autoconfigure.exclude=grails.plugin.springwebsocket.WebSocketAutoConfiguration`
+  
 */grails-app/conf/spring/resources.groovy*:
+  
+  ```groovy
+  beans = {
+      webSocketConfig(my.package.name.MyClassName)
+  }
+  ```
 
-```groovy
-beans = {
-    webSocketConfig my.package.name.MyClassName
-}
-```
-
-From there, check the Spring docs/apis/samples for the available configuration options.
+Check the Spring docs/apis/samples for the available configuration options.
 
 ### Full-Featured Broker
 
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add a dependency for TCP connection management.
 
-    implementation platform("io.projectreactor:reactor-bom:2023.0.5")
+    implementation platform("io.projectreactor:reactor-bom:2024.0.8")
     implementation "io.projectreactor.netty:reactor-netty"
 
 It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
@@ -427,7 +454,7 @@ Events can be fired/sent from all application artefacts/beans that implement the
 class ExampleService {
     
     void fireMyEvent() {
-        notify "myEvent", "hello from myEvent!"
+        notify("myEvent", "hello from myEvent!")
     }
     
 }
