@@ -26,6 +26,11 @@ dependencies {
     api "org.apache.grails:grails-controllers"
     api "org.springframework:spring-messaging"
     api "org.springframework:spring-websocket"
+
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-web"
+    integrationTestImplementation "org.spockframework:spock-core:2.4-M6-groovy-4.0"
+    integrationTestImplementation "org.spockframework:spock-spring:2.4-M6-groovy-4.0"
 }
 
 java {
@@ -89,4 +94,8 @@ publishing {
 
 signing {
     sign(publishing.publications.maven)
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
 }

@@ -167,7 +167,7 @@ To send messages directly, the `brokerMessagingTemplate` bean (of type `SimpMess
 
 The plugin provides a `WebSocket` trait that autowires the `brokerMessagingTemplate` and delegates to it.
 
-That `WebSocket` trait is automatically implemented by `WebSocket` artefacts but you can implement it from other beans as well, e.g. from a service.
+That `WebSocket` trait is automatically implemented by `WebSocket` artefacts, but you can implement it from other beans as well, e.g. from a service.
 
 */grails-app/services/example/ExampleService.groovy*:
 
@@ -226,19 +226,23 @@ If the default values are fine for your application, you are good to go. No furt
 
 The default configuration can be customized/overridden by providing a `@Configuration` bean named `webSocketConfig`.
 
-As starting point, you can create a config class/bean resembling the default config with:
+As a starting point, you can take a look at `DefaultWebSocketConfig` or you can create a config class/bean resembling the default config with:
 
     ./grailsw create-web-socket-config my.package.name.MyClassName
 
-That class will be placed under `src/main/groovy` and needs to be registered as a Spring bean named `webSocketConfig`.
+That class will be placed under `src/main/groovy` and needs to be registered as a Spring configuration bean named `webSocketConfig`.
 
 That can be accomplished in different ways, depending on your project and preferences, e.g.:
 
 * By making sure the class is in a package covered by `@ComponentScan`
 * Or, by adding `@Import(MyClassName)` to your `Application` class
-* Or, by overriding the default config like this (note that bean definition overriding is discouraged):
 
-  */grails-app/conf/spring/resources.groovy*:
+As an alternative, you can disable the `WebSocketAutoConfiguration` explicitly and use a custom config with a different name or register it via the grails spring bean dsl: 
+
+* Add `@EnableAutoConfiguration(exclude = WebSocketAutoConfiguration)` to your `Application` class
+* Or, configure `spring.autoconfigure.exclude=grails.plugin.springwebsocket.WebSocketAutoConfiguration`
+  
+*/grails-app/conf/spring/resources.groovy*:
   
   ```groovy
   beans = {
@@ -246,14 +250,14 @@ That can be accomplished in different ways, depending on your project and prefer
   }
   ```
 
-From there, check the Spring docs/apis/samples for the available configuration options.
+Check the Spring docs/apis/samples for the available configuration options.
 
 ### Full-Featured Broker
 
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add a dependency for TCP connection management.
 
-    implementation platform("io.projectreactor:reactor-bom:2023.0.11")
+    implementation platform("io.projectreactor:reactor-bom:2024.0.8")
     implementation "io.projectreactor.netty:reactor-netty"
 
 It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
