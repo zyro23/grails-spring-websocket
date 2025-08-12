@@ -19,7 +19,7 @@ jobs:
     needs:
       - test
     if: github.ref_type == 'branch'
-    environment: manual
+    environment: release
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
     needs:
       - test
     if: github.ref_type == 'tag'
-    environment: manual
+    environment: release
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

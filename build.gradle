@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "io.github.zyro23"
-version = "2.7.0-RC1"
+version = "2.7.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
