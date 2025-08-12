@@ -57,6 +57,7 @@ publishing {
         maven {
             name = "mavenCentralStaging"
             url = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
+            credentials(PasswordCredentials)
         }
     }
     publications {
