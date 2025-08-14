@@ -1,10 +1,13 @@
 package grails.plugin.springwebsocket
 
-import grails.core.GrailsApplicationLifeCycleAdapter
+
+import grails.spring.BeanBuilder
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.test.context.ActiveProfiles
@@ -17,22 +20,24 @@ import spock.lang.Specification
 @SpringBootTest(properties = "spring.autoconfigure.exclude=grails.plugin.springwebsocket.WebSocketAutoConfiguration")
 class CustomConfigDslSpec extends Specification {
 
-    @Configuration("webSocketConfig")
-    @EnableWebSocketMessageBroker
-    static class TestWebSocketConfig implements WebSocketMessageBrokerConfigurer {
-        @Override
-        void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-            stompEndpointRegistry.addEndpoint("/test")
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        static BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor() {
+            return {beanDefinitionRegistry ->
+                new BeanBuilder().beans {
+                    webSocketConfig(TestWebSocketConfig)
+                }.registerBeans(beanDefinitionRegistry)
+            }
         }
     }
 
-    @TestConfiguration
-    static class TestConfig extends GrailsApplicationLifeCycleAdapter {
+    @Configuration("webSocketConfig")
+    @EnableWebSocketMessageBroker
+    private static class TestWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         @Override
-        Closure doWithSpring() {
-            return {
-                webSocketConfig(TestWebSocketConfig)
-            }
+        void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
+            stompEndpointRegistry.addEndpoint("/test")
         }
     }
 
