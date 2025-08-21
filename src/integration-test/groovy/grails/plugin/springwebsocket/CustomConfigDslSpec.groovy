@@ -24,7 +24,7 @@ class CustomConfigDslSpec extends Specification {
     static class TestConfig {
         @Bean
         static BeanDefinitionRegistryPostProcessor beanDefinitionRegistryPostProcessor() {
-            return {beanDefinitionRegistry ->
+            return { beanDefinitionRegistry ->
                 new BeanBuilder().beans {
                     webSocketConfig(TestWebSocketConfig)
                 }.registerBeans(beanDefinitionRegistry)

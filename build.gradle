@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.14"
+    id "cloud.wondrify.asset-pipeline" version "5.0.15"
     id "groovy"
     id "java-library"
     id "maven-publish"
@@ -99,4 +99,18 @@ signing {
 
 tasks.withType(Test) {
     useJUnitPlatform()
+}
+
+// TODO: ensure config-cache compatibility
+tasks.withType(GenerateMavenPom) {
+    notCompatibleWithConfigurationCache("")
+}
+tasks.named("configureGroovyCompiler") {
+    notCompatibleWithConfigurationCache("")
+}
+tasks.named("configureGroovyCompilerGrailsCore") {
+    notCompatibleWithConfigurationCache("")
+}
+tasks.named("configureGroovyCompilerGrailsPlugin") {
+    notCompatibleWithConfigurationCache("")
 }
