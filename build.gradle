@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-RC1"
+        grailsVersion = "7.0.0-RC2"
     }
 }
 
