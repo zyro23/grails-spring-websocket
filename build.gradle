@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.16"
+    id "cloud.wondrify.asset-pipeline" version "5.0.18"
     id "groovy"
     id "java-library"
     id "maven-publish"
