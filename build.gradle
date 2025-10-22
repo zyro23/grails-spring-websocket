@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-RC2"
+        grailsVersion = "7.0.0"
     }
 }
 
@@ -103,14 +103,5 @@ tasks.withType(Test) {
 
 // TODO: ensure config-cache compatibility
 tasks.withType(GenerateMavenPom) {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompiler") {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompilerGrailsCore") {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompilerGrailsPlugin") {
     notCompatibleWithConfigurationCache("")
 }
