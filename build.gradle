@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0-RC2"
+        grailsVersion = "7.0.0"
     }
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.16"
+    id "cloud.wondrify.asset-pipeline" version "5.0.19"
     id "groovy"
     id "java-library"
     id "maven-publish"
@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "io.github.zyro23"
-version = "2.7.0-SNAPSHOT"
+version = "2.7.0"
 
 repositories {
     mavenLocal()
@@ -103,14 +103,5 @@ tasks.withType(Test) {
 
 // TODO: ensure config-cache compatibility
 tasks.withType(GenerateMavenPom) {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompiler") {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompilerGrailsCore") {
-    notCompatibleWithConfigurationCache("")
-}
-tasks.named("configureGroovyCompilerGrailsPlugin") {
     notCompatibleWithConfigurationCache("")
 }
