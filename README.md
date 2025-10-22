@@ -50,7 +50,7 @@ To install a `-SNAPSHOT` version, add the snapshot repository:
 
 And add the following line to your `build.gradle` dependencies section:
 
-    implementation "io.github.zyro23:grails-spring-websocket:2.7.0-SNAPSHOT"
+    implementation "io.github.zyro23:grails-spring-websocket:2.8.0-SNAPSHOT"
 
 Plugin snapshots are published to the maven central snapshot repository which has an automatic cleanup policy (90 days).
 
