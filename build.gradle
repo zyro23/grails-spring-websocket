@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        grailsVersion = "7.0.0"
+        grailsVersion = "7.0.4"
     }
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.19"
+    id "cloud.wondrify.asset-pipeline" version "5.0.22"
     id "groovy"
     id "java-library"
     id "maven-publish"
@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "io.github.zyro23"
-version = "2.7.0"
+version = "2.7.1-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -29,8 +29,8 @@ dependencies {
 
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-test"
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-web"
-    integrationTestImplementation "org.spockframework:spock-core:2.4-M6-groovy-4.0"
-    integrationTestImplementation "org.spockframework:spock-spring:2.4-M6-groovy-4.0"
+    integrationTestImplementation "org.spockframework:spock-core:2.4-groovy-4.0"
+    integrationTestImplementation "org.spockframework:spock-spring:2.4-groovy-4.0"
 }
 
 java {
@@ -99,6 +99,11 @@ signing {
 
 tasks.withType(Test) {
     useJUnitPlatform()
+}
+
+// TODO: ensure config-cache compatibility
+tasks.withType(asset.pipeline.gradle.AssetPluginPackage) {
+    notCompatibleWithConfigurationCache("")
 }
 
 // TODO: ensure config-cache compatibility
