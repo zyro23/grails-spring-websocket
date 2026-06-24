@@ -63,7 +63,7 @@ The plugin makes the Spring websocket/messaging web-mvc annotations usable in Gr
 
 Those annotations can be used in:
 * Regular Grails controllers
-* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`) TODO: Virker det her stadigt? Test i HelloWorld app...
+* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`)
 * Spring `@Controller` beans
 
 I think basic usage is explained best by example code.
