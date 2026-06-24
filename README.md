@@ -1,5 +1,8 @@
 # Spring Websocket Grails Plugin
 
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.zyro23/grails-spring-websocket)](https://central.sonatype.com/artifact/io.github.zyro23/grails-spring-websocket)
+[![CI](https://github.com/zyro23/grails-spring-websocket/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/zyro23/grails-spring-websocket/actions/workflows/ci.yml)
+
 This plugin aims at making the websocket support introduced in Spring 4.0 available to Grails applications.
 
 You can also use the corresponding Spring docs/apis/samples as a reference.
@@ -33,25 +36,25 @@ Version compatibility:
 ## Installation
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
-
-    implementation "io.github.zyro23:grails-spring-websocket:2.7.1"
-
+```groovy
+implementation "io.github.zyro23:grails-spring-websocket:2.7.1"
+```
 Plugin releases are published to maven central.
 
 ### Snapshots
 
 To install a `-SNAPSHOT` version, add the snapshot repository:
-
-    repositories {
-        maven {
-            url = "https://central.sonatype.com/repository/maven-snapshots"
-        }
+```groovy
+repositories {
+    maven {
+        url = "https://central.sonatype.com/repository/maven-snapshots"
     }
-
+}
+```
 And add the following line to your `build.gradle` dependencies section:
-
-    implementation "io.github.zyro23:grails-spring-websocket:2.8.0-SNAPSHOT"
-
+```groovy
+implementation "io.github.zyro23:grails-spring-websocket:2.8.0-SNAPSHOT"
+```
 Plugin snapshots are published to the maven central snapshot repository which has an automatic cleanup policy (90 days).
 
 ## Usage
@@ -60,7 +63,7 @@ The plugin makes the Spring websocket/messaging web-mvc annotations usable in Gr
 
 Those annotations can be used in:
 * Regular Grails controllers
-* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`)
+* `WebSocket` Grails artefacts (`./grailsw create-web-socket my.package.name.MyWebSocket`) TODO: Virker det her stadigt? Test i HelloWorld app...
 * Spring `@Controller` beans
 
 I think basic usage is explained best by example code.
@@ -119,7 +122,7 @@ class ExampleWebSocket {
 
 */grails-app/views/example/index.gsp*:
 
-```gsp
+```html
 <!DOCTYPE html>
 <html>
     <head>
@@ -253,10 +256,10 @@ Check the Spring docs/apis/samples for the available configuration options.
 
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add a dependency for TCP connection management.
-
-    implementation platform("io.projectreactor:reactor-bom:2024.0.8")
-    implementation "io.projectreactor.netty:reactor-netty"
-
+```groovy
+implementation platform("io.projectreactor:reactor-bom:2024.0.8")
+implementation "io.projectreactor.netty:reactor-netty"
+```
 It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
 
 ## User Destinations
