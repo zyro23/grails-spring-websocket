@@ -5,9 +5,10 @@ import grails.core.ArtefactHandlerAdapter
 class WebSocketArtefactHandler extends ArtefactHandlerAdapter {
 
     static final String PLUGIN_NAME = "springWebsocket"
+    static final String TYPE = "WebSocket"
 
     WebSocketArtefactHandler() {
-        super(DefaultGrailsWebSocketClass.ARTEFACT_TYPE, GrailsWebSocketClass.class, DefaultGrailsWebSocketClass.class, DefaultGrailsWebSocketClass.ARTEFACT_TYPE)
+        super(TYPE, GrailsWebSocketClass.class, DefaultGrailsWebSocketClass.class, DefaultGrailsWebSocketClass.WEB_SOCKET)
     }
 
     @Override

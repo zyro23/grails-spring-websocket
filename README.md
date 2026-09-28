@@ -16,6 +16,10 @@ Version compatibility:
         <th>Grails version</th>
     </tr>
     <tr>
+        <td>io.github.zyro23:grails-spring-websocket:3.0.x</td>
+        <td>8.0.0+</td>
+    </tr>
+    <tr>
         <td>io.github.zyro23:grails-spring-websocket:2.7.x</td>
         <td>7.0.0+</td>
     </tr>
@@ -23,27 +27,20 @@ Version compatibility:
         <td>io.github.zyro23:grails-spring-websocket:2.6.x</td>
         <td>6.0.0+</td>
     </tr>
-    <tr>
-        <td>org.grails.plugins:grails-spring-websocket:2.5.x</td>
-        <td>4.0.0+</td>
-    </tr>
-    <tr>
-        <td>org.grails.plugins:grails-spring-websocket:2.4.x</td>
-        <td>3.2.7+</td>
-    </tr>
 </table>
 
 ## Installation
 
 To install the plugin into a Grails application add the following line to your `build.gradle` dependencies section:
 ```groovy
-implementation "io.github.zyro23:grails-spring-websocket:2.7.1"
+implementation "io.github.zyro23:grails-spring-websocket:3.0.0-RC1"
 ```
 Plugin releases are published to maven central.
 
 ### Snapshots
 
 To install a `-SNAPSHOT` version, add the snapshot repository:
+
 ```groovy
 repositories {
     maven {
@@ -51,10 +48,13 @@ repositories {
     }
 }
 ```
+
 And add the following line to your `build.gradle` dependencies section:
+
 ```groovy
-implementation "io.github.zyro23:grails-spring-websocket:2.8.0-SNAPSHOT"
+implementation "io.github.zyro23:grails-spring-websocket:3.0.0-SNAPSHOT"
 ```
+
 Plugin snapshots are published to the maven central snapshot repository which has an automatic cleanup policy (90 days).
 
 ## Usage
@@ -91,7 +91,6 @@ class ExampleController {
     protected String hello(String world) {
         return "hello, ${world}!"
     }
-
 }
 ```
 
@@ -114,7 +113,6 @@ class ExampleWebSocket {
     String hello(String world) {
         return "hello, ${world}!"
     }
-
 }
 ```
 
@@ -163,7 +161,7 @@ While this example shows jquery used with the asset-pipeline plugin, the use of 
 
 ### Service (brokerMessagingTemplate bean)
 
-To send messages directly, the `brokerMessagingTemplate` bean (of type `SimpMessageSendingOperations`) can be used.
+To send messages directly, the `brokerMessagingTemplate` bean (of type `SimpMessagingTemplate`) can be used.
 
 The plugin provides a `WebSocket` trait that autowires the `brokerMessagingTemplate` and delegates to it.
 
@@ -181,7 +179,6 @@ class ExampleService implements WebSocket {
     void hello() {
         convertAndSend("/topic/hello", "hello from service!")
     }
-
 }
 ```
 
@@ -192,16 +189,15 @@ Or, if you prefer, you can also inject and use the `brokerMessagingTemplate` bea
 ```groovy
 package example
 
-import org.springframework.messaging.simp.SimpMessageSendingOperations
+import org.springframework.messaging.simp.SimpMessagingTemplate
 
 class ExampleService {
 
-    SimpMessageSendingOperations brokerMessagingTemplate
+    SimpMessagingTemplate brokerMessagingTemplate
 
     void hello() {
         brokerMessagingTemplate.convertAndSend("/topic/hello", "hello from service!")
     }
-
 }
 ```
 
@@ -211,7 +207,7 @@ Configuration relies on Spring java config, especially `@EnableWebSocketMessageB
 
 ### Default Configuration
 
-By default, a configuration bean named `webSocketConfig` of type `grails.plugin.springwebsocket.DefaultWebSocketConfig` is registered:
+By default, `WebSocketAutoConfiguration` registers a `DefaultWebSocketConfig` (implementing `WebSocketMessageBrokerConfigurer`):
 
 * An in-memory `Map`-based message broker implementation is used
 * The prefixes for broker destinations ("outgoing messages") are: `/queue` or `/topic`
@@ -224,31 +220,21 @@ If the default values are fine for your application, you are good to go. No furt
 
 ### Custom Configuration
 
-The default configuration can be customized/overridden by providing a `@Configuration` bean named `webSocketConfig`.
+> [!NOTE]
+> Registering a custom config via the legacy grails spring bean dsl (`resources.groovy`) is not supported anymore.
+
+The default configuration can be customized/overridden by providing a (`@Configuration`) class using `@EnableWebSocketMessageBroker`.
 
 As a starting point, you can take a look at `DefaultWebSocketConfig` or you can create a config class/bean resembling the default config with:
 
     ./grailsw create-web-socket-config my.package.name.MyClassName
 
-That class will be placed under `src/main/groovy` and needs to be registered as a Spring configuration bean named `webSocketConfig`.
+That class will be placed under `src/main/groovy` and needs to be registered as a Spring configuration bean.
 
 That can be accomplished in different ways, depending on your project and preferences, e.g.:
 
 * By making sure the class is in a package covered by `@ComponentScan`
 * Or, by adding `@Import(MyClassName)` to your `Application` class
-
-As an alternative, you can disable the `WebSocketAutoConfiguration` explicitly and use a custom config with a different name or register it via the grails spring bean dsl: 
-
-* Add `@EnableAutoConfiguration(exclude = WebSocketAutoConfiguration)` to your `Application` class
-* Or, configure `spring.autoconfigure.exclude=grails.plugin.springwebsocket.WebSocketAutoConfiguration`
-  
-*/grails-app/conf/spring/resources.groovy*:
-  
-  ```groovy
-  beans = {
-      webSocketConfig(my.package.name.MyClassName)
-  }
-  ```
 
 Check the Spring docs/apis/samples for the available configuration options.
 
@@ -256,11 +242,10 @@ Check the Spring docs/apis/samples for the available configuration options.
 
 To use a full-featured (e.g. RabbitMQ, ActiveMQ, etc.) instead of the default simple broker, please refer to the Spring docs regarding configuration.
 Additionally, add a dependency for TCP connection management.
+
 ```groovy
-implementation platform("io.projectreactor:reactor-bom:2024.0.8")
 implementation "io.projectreactor.netty:reactor-netty"
 ```
-It is a good idea to align the BOM version with the one your current spring-boot BOM is using.
 
 ## User Destinations
 
@@ -276,7 +261,6 @@ class ExampleController {
     protected String hello(String world) {
         return "hello from controller, ${world}!"
     }
-
 }
 ```
 
@@ -292,7 +276,6 @@ class ExampleService implements WebSocket {
     void hello() {
         convertAndSendToUser("myTargetUsername", "/queue/hello", "hello, target user!")
     }
-
 }
 ```
 
@@ -327,22 +310,28 @@ dependencies {
 
 ```groovy
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
-class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+class SecurityConfig {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic()
-        http.authorizeRequests().anyRequest().authenticated()
+    @Bean
+    UserDetailsService userDetailsService() {
+        UserDetails userDetails = User.withDefaultPasswordEncoder()
+                .username("user")
+                .password("password")
+                .roles("USER")
+                .build()
+        return new InMemoryUserDetailsManager(userDetails)
     }
-
-    @Autowired
-    void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-            .withUser("user").password("password").roles("USER")
+    
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) {
+        return http
+                .formLogin(Customizer.withDefaults())
+                .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+                        .anyRequest()
+                        .authenticated())
+                .build()
     }
-
 }
 ```
 
@@ -397,7 +386,6 @@ class ExampleController {
     String handleException(Exception e) {
         return "caught ${e.message}"
     }
-    
 }
 ```
 
@@ -413,67 +401,72 @@ The following example shows how you can filter inbound messages by type and/or b
 
 ```groovy
 @Configuration
-class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
-    
-    @Override
-    void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-            .nullDestMatcher().authenticated()
-            .simpSubscribeDestMatchers("/user/queue/errors").permitAll()
-            .simpDestMatchers("/app/**").hasRole("USER")
-            .simpSubscribeDestMatchers("/user/**", "/topic/**").hasRole("USER")
-            .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
-            .anyMessage().denyAll()
+@EnableWebSocketSecurity
+class WebSocketSecurityConfig {
+
+    @Bean
+    AuthorizationManager<Message<?>> messageAuthorizationManager(MessageMatcherDelegatingAuthorizationManager.Builder messages) {
+        return messages
+                .nullDestMatcher()
+                .authenticated()
+                .simpSubscribeDestMatchers("/user/queue/errors")
+                .permitAll()
+                .simpDestMatchers("/app/**")
+                .hasRole("USER")
+                .simpSubscribeDestMatchers("/user/**", "/topic/**")
+                .hasRole("USER")
+                .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE)
+                .denyAll()
+                .anyMessage()
+                .denyAll()
+                .build()
     }
-    
 }
 ```
 
 ## Event Handling
 
-Starting with Grails 3, grails-plugin-events is a core plugin allowing to use the Reactor framework for event handling.
+grails-events is a core plugin allowing to use an event bus abstraction/impl. for event handling.
 
-While there is no special event integration regarding websocket messaging (because it is not really necessary anymore), a service that handles application events can look like the follwing snippet. I am _not_ talking about Spring `ApplicationEvent`s here, but Reactor `Event`s.
+While there is no special event integration regarding websocket messaging, a service that handles application events can look like the following snippet. I am _not_ talking about Spring `ApplicationEvent`s here, but Grails events.
 
 */grails-app/services/example/ExampleService.groovy*:
 
 ```groovy
-@Consumer
 class ExampleService implements WebSocket {
     
-    @Selector("myEvent")
-    void hello(Event<String> event) {
-        convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+    @Subscriber("myEvent")
+    void hello(String event) {
+        convertAndSend("/topic/myEventTopic", "myEvent: ${event}")
     }
-    
 }
 ```
 
-Events can be fired/sent from all application artefacts/beans that implement the trait `Events`. Grails service beans do so by convention. Those beans also allow dynamic registration of event listeners. E.g.:
+Events can be fired/sent from all application artefacts/beans that implement the trait `EventPublisher`.
 
 */grails-app/services/example/ExampleService.groovy*:
 
 ```groovy
-class ExampleService {
+class ExampleService implements EventPublisher {
     
     void fireMyEvent() {
         notify("myEvent", "hello from myEvent!")
     }
-    
 }
 ```
+
+Dynamic registration of event listeners is supported by the trait `EventBusAware`. E.g.:
 
 */grails-app/init/BootStrap.groovy*:
 
 ```groovy
-class BootStrap implements Events, WebSocket {
+class BootStrap implements EventBusAware, WebSocket {
 
     def init = {
-        on("myEvent") { Event<String> event ->
-            convertAndSend("/topic/myEventTopic", "myEvent: ${event.data}")
+        eventBus.subscribe("myEvent") { String event ->
+            convertAndSend("/topic/myEventTopic", "myEvent: ${event}")
         }
     }
-
 }
 ```
 

@@ -4,10 +4,9 @@ import org.grails.core.AbstractInjectableGrailsClass;
 
 public class DefaultGrailsWebSocketClass extends AbstractInjectableGrailsClass {
 
-    public static final String ARTEFACT_TYPE = "WebSocket";
+    public static final String WEB_SOCKET = "WebSocket";
 
     public DefaultGrailsWebSocketClass(Class clazz) {
-        super(clazz, ARTEFACT_TYPE);
+        super(clazz, WEB_SOCKET);
     }
-
 }

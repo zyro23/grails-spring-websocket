@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        grailsVersion = "7.1.2"
+        grailsVersion = "8.0.0-RC1"
     }
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.0.22"
+    id "cloud.wondrify.asset-pipeline" version "5.2.0-RC1"
     id "groovy"
     id "java-library"
     id "maven-publish"
@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "io.github.zyro23"
-version = "2.8.0-SNAPSHOT"
+version = "3.0.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -22,20 +22,17 @@ repositories {
 }
 
 dependencies {
-    api "com.fasterxml.jackson.core:jackson-databind"
     api "org.apache.grails:grails-controllers"
-    api "org.springframework:spring-messaging"
-    api "org.springframework:spring-websocket"
+    api "org.springframework.boot:spring-boot-jackson"
+    api "org.springframework.boot:spring-boot-websocket"
 
-    integrationTestImplementation "org.springframework.boot:spring-boot-starter-test"
-    integrationTestImplementation "org.springframework.boot:spring-boot-starter-web"
-    integrationTestImplementation "org.spockframework:spock-core:2.4-groovy-4.0"
-    integrationTestImplementation "org.spockframework:spock-spring:2.4-groovy-4.0"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
+    integrationTestImplementation "org.spockframework:spock-spring"
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withJavadocJar()
     withSourcesJar()
@@ -97,16 +94,6 @@ signing {
     sign(publishing.publications.maven)
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
-}
-
-// TODO: ensure config-cache compatibility
-tasks.withType(asset.pipeline.gradle.AssetPluginPackage) {
-    notCompatibleWithConfigurationCache("")
-}
-
-// TODO: ensure config-cache compatibility
-tasks.withType(GenerateMavenPom) {
-    notCompatibleWithConfigurationCache("")
 }

@@ -13,6 +13,6 @@ class WebSocketTraitInjector implements TraitInjector {
 
     @Override
     String[] getArtefactTypes() {
-        return [DefaultGrailsWebSocketClass.ARTEFACT_TYPE] as String[]
+        return [WebSocketArtefactHandler.TYPE] as String[]
     }
 }

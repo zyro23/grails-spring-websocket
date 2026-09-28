@@ -2,10 +2,9 @@ package grails.plugin.springwebsocket
 
 import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.SubscribableChannel
-import org.springframework.messaging.converter.MessageConverter
+import org.springframework.messaging.converter.CompositeMessageConverter
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.messaging.simp.annotation.support.SimpAnnotationMethodMessageHandler
 
@@ -20,15 +19,12 @@ class GrailsWebSocketAnnotationMethodMessageHandler extends SimpAnnotationMethod
     }
 
     @Autowired
-    @Override
-    @Qualifier("brokerMessageConverter")
-    void setMessageConverter(MessageConverter messageConverter) {
-        super.setMessageConverter(messageConverter)
+    void setMessageConverter(CompositeMessageConverter brokerMessageConverter) {
+        super.setMessageConverter(brokerMessageConverter)
     }
 
     @Override
     protected boolean isHandler(Class<?> beanType) {
         return WebSocket.isAssignableFrom(beanType)
     }
-
 }

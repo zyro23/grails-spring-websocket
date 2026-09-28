@@ -2,11 +2,14 @@ package grails.plugin.springwebsocket
 
 import grails.plugins.Plugin
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.BeanRegistrar
+import org.springframework.beans.factory.support.AbstractBeanDefinition
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 
 @Slf4j
 class SpringWebsocketGrailsPlugin extends Plugin {
 
-    def grailsVersion = "7.0.0 > *"
+    def grailsVersion = "8.0.0 > *"
     def title = "Spring WebSocket Plugin"
     def author = "zyro"
     def authorEmail = ""
@@ -17,18 +20,25 @@ class SpringWebsocketGrailsPlugin extends Plugin {
 
     def watchedResources = "file:./grails-app/websockets/**/*WebSocket.groovy"
     def profiles = ["web"]
-    def loadAfter = ["hibernate3", "hibernate4", "hibernate5", "services"]
+    def loadAfter = ["hibernate5", "services"]
 
     @Override
-    Closure doWithSpring() {
-        return {
-            for (websocket in grailsApplication.getArtefacts(DefaultGrailsWebSocketClass.ARTEFACT_TYPE)) {
-                log.debug "configuring webSocket ${websocket.propertyName}"
-                "${websocket.propertyName}"(websocket.clazz) { bean ->
-                    bean.autowire = "byName"
+    BeanRegistrar beanRegistrar() {
+        return { registry, env ->
+            registry.registerBean(BeanDefinitionRegistryPostProcessor) { spec ->
+                spec.supplier { supplier ->
+                    return { beanDefinitionRegistry ->
+                        for (webSocketClass in grailsApplication.getArtefacts(WebSocketArtefactHandler.TYPE)) {
+                            ((AbstractBeanDefinition) beanDefinitionRegistry.getBeanDefinition(webSocketClass.propertyName))
+                                    .setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_NAME)
+                        }
+                    } as BeanDefinitionRegistryPostProcessor
                 }
+            }
+            for (webSocketClass in grailsApplication.getArtefacts(WebSocketArtefactHandler.TYPE)) {
+                log.debug("configuring webSocket ${webSocketClass.propertyName}")
+                registry.registerBean(webSocketClass.propertyName, webSocketClass.clazz)
             }
         }
     }
-
 }

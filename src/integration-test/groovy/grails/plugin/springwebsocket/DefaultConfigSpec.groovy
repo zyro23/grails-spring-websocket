@@ -17,10 +17,7 @@ class DefaultConfigSpec extends Specification {
 
     void "ctx loads with default websocket (auto-)config"() {
         expect:
-        applicationContext.getBean("webSocketConfig") instanceof DefaultWebSocketConfig
+        applicationContext.getBean(DefaultWebSocketConfig)
         applicationContext.getBean(SimpMessagingTemplate)
     }
-
 }
-
-

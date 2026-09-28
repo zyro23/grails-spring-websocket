@@ -14,12 +14,11 @@ class WebSocketArtefactTypeTransformation extends ArtefactTypeAstTransformation 
 
 	@Override
 	protected String resolveArtefactType(SourceUnit sourceUnit, AnnotationNode annotationNode, ClassNode classNode) {
-		return DefaultGrailsWebSocketClass.ARTEFACT_TYPE
+		return WebSocketArtefactHandler.TYPE
 	}
 
 	@Override
 	protected Class getAnnotationTypeClass() {
 		return WebSocket
 	}
-
 }

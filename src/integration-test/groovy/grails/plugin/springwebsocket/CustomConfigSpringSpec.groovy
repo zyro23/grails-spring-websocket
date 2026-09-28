@@ -1,5 +1,6 @@
 package grails.plugin.springwebsocket
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -16,7 +17,7 @@ import spock.lang.Specification
 class CustomConfigSpringSpec extends Specification {
 
     @EnableWebSocketMessageBroker
-    @TestConfiguration("webSocketConfig")
+    @TestConfiguration
     static class TestWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         @Override
         void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
@@ -28,9 +29,14 @@ class CustomConfigSpringSpec extends Specification {
     ApplicationContext applicationContext
 
     void "ctx loads with custom websocket (spring-)config"() {
+        when:
+        applicationContext.getBean(DefaultWebSocketConfig)
+
+        then:
+        thrown(NoSuchBeanDefinitionException)
+
         expect:
-        applicationContext.getBean("webSocketConfig") instanceof TestWebSocketConfig
+        applicationContext.getBean(TestWebSocketConfig)
         applicationContext.getBean(SimpMessagingTemplate)
     }
-
 }

@@ -3,11 +3,13 @@ package grails.plugin.springwebsocket
 import groovy.transform.CompileStatic
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration
 import org.springframework.context.annotation.Import
+import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration
 
-@AutoConfiguration
+@AutoConfiguration(before = WebSocketMessagingAutoConfiguration)
 @CompileStatic
-@ConditionalOnMissingBean(name = "webSocketConfig")
+@ConditionalOnMissingBean(DelegatingWebSocketMessageBrokerConfiguration)
 @Import(DefaultWebSocketConfig)
 class WebSocketAutoConfiguration {
 }
