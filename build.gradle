@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        grailsVersion = "8.0.0-RC1"
+        grailsVersion = "8.0.0"
     }
 }
 
 plugins {
-    id "cloud.wondrify.asset-pipeline" version "5.2.0-RC1"
+    id "cloud.wondrify.asset-pipeline" version "5.2.2"
     id "groovy"
     id "java-library"
     id "maven-publish"
