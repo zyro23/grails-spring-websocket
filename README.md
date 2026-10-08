@@ -52,7 +52,7 @@ repositories {
 And add the following line to your `build.gradle` dependencies section:
 
 ```groovy
-implementation "io.github.zyro23:grails-spring-websocket:3.0.0-SNAPSHOT"
+implementation "io.github.zyro23:grails-spring-websocket:3.1.0-SNAPSHOT"
 ```
 
 Plugin snapshots are published to the maven central snapshot repository which has an automatic cleanup policy (90 days).
